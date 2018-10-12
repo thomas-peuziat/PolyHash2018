@@ -44,14 +44,14 @@ def parse(filename):
             plan = []
             for i in range(description[1]):
                 plan_string.append(input_file.readline())  # ['.#\n', '##\n', '.#\n']
-                plan.append(
-                    list(plan_string[i].splitlines()[0]))  # [['.', '#'], ['#', '#'], ['.', '#']]
+                plan.append(list(plan_string[i].splitlines()[0]))  # [['.', '#'], ['#', '#'], ['.', '#']]
 
             project = [description, plan]
             project_list.append(project)
 
         # TODO : project_list -> dict(Building)
     return grid, project_list
+
 
 def textify(building_list, filename):
     """
@@ -61,21 +61,20 @@ def textify(building_list, filename):
     :param filename: Nom de sortie du fichier (sans extension)
 
     :Example:
-        building_list = []
+        building_list = [3, [[0, [0, 0]], [0, [5, 5]], [1, [3, 8]]]]
         ...
         textify(building_list, "a_example")
     """
-    # list_len = len(building_list)
-    #
-    # path = os.path.join(os.path.pardir, 'data', 'output', filename + '.out')
-    # with open(path, 'w') as output_file:
-    #     output_file.write(str(list_len) + '\n')
 
-        #for i in range(list_len):
-            #ID building
-            #Row top left corner
-            #column top left corner
+    path = os.path.join(os.path.pardir, 'data', 'output', filename + '.out')
+    with open(path, 'w') as output_file:
+        output_file.write(str(building_list[0]) + '\n')
 
-
-# liste = [3, 3, 4]
-# textify(liste, "testother")
+        # [3, [[0, [0, 0]], [0, [5, 5]], [1, [3, 8]]]]
+        # Correspond à :
+        # [len_building_list, [building_list]]
+        # building_list = [building]
+        # building = [id_project, [top_left_row, top_left_column]]
+        for i in range(building_list[0]):
+            output_file.write(str(building_list[1][i][0]) + ' ' + str(building_list[1][i][1][0]) + ' ' +
+                              str(building_list[1][i][1][1]) + '\n')
