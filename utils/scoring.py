@@ -21,7 +21,20 @@ def scoring(path=""):
         lines = input_file.readlines()                              #read the other line from the second
         input_file.close()
         for line in lines:
-            print(line)
+            project_number = line.split()[0]                        #get the number of the building project
+            print("Number project : " + project_number)
+            #TODO: créer une méthode bool isResidentialProject(value)
+            if int(project_number) == 0: #isResidentialProject(numberProject()):
+                ## Get top left coordinates
+                x_top = line.split()[1]
+                y_top = line.split()[2]
+                print("X top : " + x_top)
+                print("Y top : " + y_top)
+
+                ##TODO: Récupération du plan du building
+                    
+
+                ##TODO: Calculer la distance de Manhattan la plus courte
 
 
 
@@ -30,6 +43,7 @@ def scoring(path=""):
 
 
 
-chemin = "/home/killian/Documents/Polytech/ProjetAlgo/polyhash2018/data/input/a_example.in"
+
+chemin = "/home/killian/Documents/Polytech/ProjetAlgo/polyhash2018/data/output/test.out"
 
 scoring(chemin)
