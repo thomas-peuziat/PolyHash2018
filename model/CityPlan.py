@@ -1,5 +1,5 @@
 
-class CityPlan():
+class CityPlan:
 
 	def __init__(self, matrix, name, dist):
 		self.matrix = matrix
@@ -7,8 +7,8 @@ class CityPlan():
 		self.distManhattanMax = dist
 		self.nbProjectPlaced = 0
 	
-	def addTo(building, posX, posY):
-		if(building.isPlaceable()):
+	def addTo(self, building, posX, posY):
+		if(building.isPlaceable(self, posX, posY)):
 			lignes, colonnes = building.matrix.shape
 
 			#on parcourt a partir de la posY definie jusqu'a 

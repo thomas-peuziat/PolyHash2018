@@ -1,8 +1,9 @@
 import numpy as np
-import CityPlan
+from model.CityPlan import CityPlan
 
-class Building():
-	
+
+class Building:
+
 	def __init__(self, matrix):
 		self.posX=None
 		self.posY=None
@@ -33,12 +34,12 @@ class Building():
 			return False
 		
 		
-matriceVille=np.array([['.','.','.'],['#','#','#'],['.','.','.'],['#','#','#'],['.','.','.'],['#','#','#'],['.','.','.'],['.','.','.'],['.','.','.'],['.','.','.']])
-c=CityPlan.CityPlan(matriceVille,"Lyon",4)
-print(c.matrix)
+#matriceVille=np.array([['.','.','.'],['#','#','#'],['.','.','.'],['#','#','#'],['.','.','.'],['#','#','#'],['.','.','.'],['.','.','.'],['.','.','.'],['.','.','.']])
+#c=CityPlan(matriceVille,"Lyon",4)
+#print(c.matrix)
 
-matBuild=np.array([['.','#','#'],['#','#','#'],['#','.','#']])
-b=Building(matBuild)
-
-print(b.isPlaceable(c,0,2))
-print(b.matrix)
+# matBuild=np.array([['.','#','#'],['#','#','#'],['#','.','#']])
+# b=Building(matBuild)
+#
+# print(b.isPlaceable(c,0,2))
+# print(b.matrix)
