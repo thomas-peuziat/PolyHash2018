@@ -47,17 +47,19 @@ def parse(filename) -> (CityPlan, dict):
             description = description_string.splitlines()[0].split()  # ['R', '3', '2', '25']
             plan_string = []
             plan = []
+            plan_np = None
             for i in range(int(description[1])):
                 plan_string.append(input_file.readline())  # ['.#\n', '##\n', '.#\n']
                 plan.append(list(plan_string[i].splitlines()[0]))  # [['.', '#'], ['#', '#'], ['.', '#']]
+                plan_np = np.asarray(plan)
 
             if description[0] == 'R':
-                project = Residential(plan, int(description[3]))
+                project = Residential(plan_np, int(description[3]))
                 key = "R." + description[1] + '.' + description[2] + '.' + description[3] + '.' + str(id_project)
                 project_dict[key] = project
                 id_project += 1
             elif description[0] == 'U':
-                project = Utility(plan, int(description[3]))
+                project = Utility(plan_np, int(description[3]))
                 key = "U." + description[1] + '.' + description[2] + '.' + description[3] + '.' + str(id_project)
                 project_dict[key] = project
                 id_project += 1
@@ -91,8 +93,3 @@ def textify(building_list, filename):
             output_file.write(str(building_list[1][i][0]) + ' ' + str(building_list[1][i][1][0]) + ' ' +
                               str(building_list[1][i][1][1]) + '\n')
 
-# cityplan, dict = parse("a_example")
-# print(cityplan.nameProject, cityplan.distManhattanMax, cityplan.nbProjectPlaced)
-# print(dict)
-# cityplan.addTo(dict["R.3.2.25.0"], 0, 0)
-# print(cityplan.matrix)

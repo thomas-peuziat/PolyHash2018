@@ -1,4 +1,4 @@
-from Building import Building
+from model.Building import Building
 
 
 class Residential(Building):
