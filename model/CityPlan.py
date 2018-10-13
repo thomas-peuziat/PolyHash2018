@@ -22,6 +22,6 @@ class CityPlan:
                     self.matrix[numLignes, numColonnes] = building.matrix[idx_building_row, idx_building_column]
                     idx_building_column += 1
                 idx_building_row += 1
-            return True
+            return building
         else:
             return False

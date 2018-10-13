@@ -25,7 +25,8 @@ def parse(filename) -> (CityPlan, dict):
         parse("a_example")
     """
 
-    path = os.path.join(os.path.pardir, 'data', 'input', filename + '.in')
+    #path = os.path.join(os.path.pardir, 'data', 'input', filename + '.in')
+    path = os.path.join(os.path.curdir, 'data', 'input', filename + '.in')
     with open(path, 'r') as input_file:
         grid_string = input_file.readline()  # Ex: "4 7 2 3\n"
         grid = grid_string.splitlines()[0].split()  # ['4', '7', '2', '3']
@@ -80,16 +81,28 @@ def textify(building_list, filename):
         textify(building_list, "a_example")
     """
 
-    path = os.path.join(os.path.pardir, 'data', 'output', filename + '.out')
+    #path = os.path.join(os.path.pardir, 'data', 'output', filename + '.out')
+    path = os.path.join(os.path.curdir, 'data', 'output', filename + '.out')
     with open(path, 'w') as output_file:
-        output_file.write(str(building_list[0]) + '\n')
+        output_file.write(str(len(building_list)) + '\n')
 
         # [3, [[0, [0, 0]], [0, [5, 5]], [1, [3, 8]]]]
         # Correspond à :
         # [len_building_list, [building_list]]
         # building_list = [building]
         # building = [id_project, [top_left_row, top_left_column]]
-        for i in range(building_list[0]):
-            output_file.write(str(building_list[1][i][0]) + ' ' + str(building_list[1][i][1][0]) + ' ' +
-                              str(building_list[1][i][1][1]) + '\n')
+        for i in range(len(building_list)):
+            output_file.write(str(building_list[i][0]) + ' ' + str(building_list[i][1][0]) + ' ' +
+                              str(building_list[i][1][1]) + '\n')
 
+
+# cityplan, dict = parse("a_example")
+# print(cityplan.nameProject, cityplan.distManhattanMax, cityplan.nbProjectPlaced)
+#
+# for key in dict:
+#     print(key)
+#     print(dict[key].matrix)
+#
+#
+# cityplan.add(dict["R.3.2.25.0"], 0, 0)
+# print(cityplan.matrix)
