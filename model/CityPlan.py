@@ -1,5 +1,5 @@
 
-class CityPlan():
+class CityPlan:
 
 	def __init__(self, matrix, name, dist):
 		self.matrix = matrix

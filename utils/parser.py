@@ -7,14 +7,19 @@ et "Submissions"
 """
 
 import os.path  # Utile pour la compatibilite format de path entre OS
+import numpy as np
+from model.CityPlan import CityPlan
+from model.Residential import Residential
+from model.Utility import Utility
 
 
-def parse(filename):
+def parse(filename) -> (CityPlan, dict):
     """
     Extrait les données d'un fichier formaté, situé dans le dossier "[...]/polyhash2018/data/input/"
 
     :param filename: Nom du fichier (sans extension)
-    :return: Données utilisables
+    :return: Données utilisables (CityPlan et project_dict)
+    :rtype: (CityPlan, dict)
 
     :Example:
         parse("a_example")
@@ -27,9 +32,12 @@ def parse(filename):
         for i in range(len(grid)):  # [4, 7, 2, 3]
             grid[i] = int(grid[i])
 
-        # TODO : grid -> PlanVille
+        city_plan = CityPlan(np.full((grid[0], grid[1]), '.'), filename, grid[2])
 
-        project_list = []
+        id_project = 0
+
+        # project_dict : [R|U].ligne.colonne.[capacite|type].id
+        project_dict = {}
         while 'le fichier contient des lignes non analysees':
             description_string = input_file.readline()  # "R 3 2 25\n"
 
@@ -37,20 +45,24 @@ def parse(filename):
                 break
 
             description = description_string.splitlines()[0].split()  # ['R', '3', '2', '25']
-            for i in range(len(description) - 1, 0, -1):  # ['R', 3, 2, 25]
-                description[i] = int(description[i])
-
             plan_string = []
             plan = []
-            for i in range(description[1]):
+            for i in range(int(description[1])):
                 plan_string.append(input_file.readline())  # ['.#\n', '##\n', '.#\n']
                 plan.append(list(plan_string[i].splitlines()[0]))  # [['.', '#'], ['#', '#'], ['.', '#']]
 
-            project = [description, plan]
-            project_list.append(project)
+            if description[0] == 'R':
+                project = Residential(plan, int(description[3]))
+                key = "R." + description[1] + '.' + description[2] + '.' + description[3] + '.' + str(id_project)
+                project_dict[key] = project
+                id_project += 1
+            elif description[0] == 'U':
+                project = Utility(plan, int(description[3]))
+                key = "U." + description[1] + '.' + description[2] + '.' + description[3] + '.' + str(id_project)
+                project_dict[key] = project
+                id_project += 1
 
-        # TODO : project_list -> dict(Building)
-    return grid, project_list
+    return city_plan, project_dict
 
 
 def textify(building_list, filename):
@@ -78,3 +90,9 @@ def textify(building_list, filename):
         for i in range(building_list[0]):
             output_file.write(str(building_list[1][i][0]) + ' ' + str(building_list[1][i][1][0]) + ' ' +
                               str(building_list[1][i][1][1]) + '\n')
+
+# cityplan, dict = parse("a_example")
+# print(cityplan.nameProject, cityplan.distManhattanMax, cityplan.nbProjectPlaced)
+# print(dict)
+# cityplan.addTo(dict["R.3.2.25.0"], 0, 0)
+# print(cityplan.matrix)

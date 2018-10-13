@@ -32,10 +32,26 @@ def scoring(path=""):
                 print("Y top : " + y_top)
 
                 ##TODO: Récupération du plan du building
-                    
+                eg_building_plan = [[".", "#"], ["#", "#"], ["#", "#"]]             #example
+                list_coordonates =[]
+                indexX = 0
+                for line in eg_building_plan:
+                    indexY = 0
+                    for col in line:
+                        if col == "#":
+                            list_coordonates.append([indexX, indexY])
+                        indexY += 1
+                    indexX += 1
+
+                print(list_coordonates)
+
+                for cases in list_coordonates:
+                    cases[0] += int(x_top)
+                    cases[1] += int(y_top)
+                print(list_coordonates)
 
                 ##TODO: Calculer la distance de Manhattan la plus courte
-
+                
 
 
 
