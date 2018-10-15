@@ -12,6 +12,8 @@ from model.CityPlan import CityPlan
 from model.Residential import Residential
 from model.Utility import Utility
 
+import scipy.misc as smp
+
 
 def parse(filename) -> (CityPlan, dict):
     """
@@ -25,7 +27,6 @@ def parse(filename) -> (CityPlan, dict):
         parse("a_example")
     """
 
-    #path = os.path.join(os.path.pardir, 'data', 'input', filename + '.in')
     path = os.path.join(os.path.curdir, 'data', 'input', filename + '.in')
     with open(path, 'r') as input_file:
         grid_string = input_file.readline()  # Ex: "4 7 2 3\n"
@@ -81,7 +82,6 @@ def textify(building_list, filename):
         textify(building_list, "a_example")
     """
 
-    #path = os.path.join(os.path.pardir, 'data', 'output', filename + '.out')
     path = os.path.join(os.path.curdir, 'data', 'output', filename + '.out')
     with open(path, 'w') as output_file:
         output_file.write(str(len(building_list)) + '\n')
@@ -96,13 +96,34 @@ def textify(building_list, filename):
                               str(building_list[i][1][1]) + '\n')
 
 
-# cityplan, dict = parse("a_example")
-# print(cityplan.nameProject, cityplan.distManhattanMax, cityplan.nbProjectPlaced)
-#
-# for key in dict:
-#     print(key)
-#     print(dict[key].matrix)
-#
-#
-# cityplan.add(dict["R.3.2.25.0"], 0, 0)
-# print(cityplan.matrix)
+def imgify(cityplan, building_list, filename):
+    """
+        Créer une image représentant le plan final, situé dans le dossier "[...]/polyhash2018/data/output/", grâce aux données en entrées
+
+        :param cityplan: Objet CityPlan
+        :param building_list: Liste de projets placés (bâtiments)
+        :param filename: Nom de sortie du fichier (sans extension)
+
+        :Example:
+            cityplan = CityPlan( ...
+            building_list = [3, [[0, [0, 0]], [0, [5, 5]], [1, [3, 8]]]]
+            ...
+            imgify(cityplan, building_list, "a_example")
+        """
+
+    # TODO : afficher en couleurs les batiments
+    path = os.path.join(os.path.curdir, 'data', 'output', filename + '.png')
+
+    row_max, column_max = cityplan.matrix.shape
+    data = np.zeros((row_max, column_max, 3), dtype=np.uint8)
+
+    for idx_row, val_row in enumerate(cityplan.matrix):
+        for idx_column, val_element in enumerate(val_row):
+            if val_element == '.':
+                data[idx_row][idx_column] = [0, 0, 0]
+            else:
+                data[idx_row][idx_column] = [255, 255, 255]
+
+    img = smp.toimage(data)
+    img.save(path)
+    #img.show()

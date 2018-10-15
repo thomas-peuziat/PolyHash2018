@@ -2,14 +2,12 @@ from utils import parser
 from utils import solver
 
 
-filename = "c_going_green"
+filename = "f_different_footprints"
 cityplan, building_dict = parser.parse(filename)
 
-for p in building_dict.values():
-    print(p.matrix)
-    print("---------------")
-
-cityplan, list_building_placed = solver.random_solver(cityplan, building_dict)
-print(list_building_placed)
+cityplan, list_building_placed = solver.random_solver(cityplan, building_dict, 1000000)
 
 parser.textify(list_building_placed, filename)
+
+# Se place dans data/output/
+parser.imgify(cityplan, list_building_placed, filename)
