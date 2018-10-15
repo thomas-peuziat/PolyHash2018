@@ -25,7 +25,23 @@ def scoring(path):
     ##TODO: Calculer la distance de Manhattan la plus courte
 
     for resid in residential_list:
-        print(resid[0])
+        xTop_resid = resid[1]
+        yTop_resid = resid[2]
+
+        for util in utilitaires_list:
+            xTop_util = util[1]
+            yTop_util = util[2]
+
+            if xTop_resid > xTop_util:                  #Le batiment résidentiel est sous le batiment utilitaire
+                #ne garder que les coordonnées de la tranche la plus proche
+            elif xTop_resid < xTop_util:
+                # Le batiment utilitaire est sous le batiment résidentiel
+            else: # Mêmes coordonnées X, donc on regarde le y
+                if yTop_resid > yTop_util:  # Le batiment résidentiel est à droite du batiment utilitaire
+                # ne garder que les coordonnées de la tranche la plus proche
+                elif yTop_resid < yTop_util:
+            # Le batiment utilitaire est à droite du batiment résidentiel
+
     # for util in lines:
     #     util_number_project = line.split()[0]
     #     if util_number_project == 1 #isUtilitaireProject(util_number_project):                #Batiment utilitaire
