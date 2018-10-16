@@ -43,6 +43,7 @@ def scoring(path):
             util_tmp = []
             if colTop_resid < colTop_util:                  #Le batiment résidentiel est sous le batiment utilitaire
 
+
                 ligne_resid = rowTop_resid
                 ligne_util = rowTop_util
                 for cases in resid[3]:
@@ -69,12 +70,7 @@ def scoring(path):
                         util_tmp.append(min)
                         first_tour = False
 
-                    if int(ligne_util) == int(ligne):
-                        print()
-                        # min = [ligne, col]
-                        # print("add : " + str(min))
-                        # util_tmp.append(min)
-                    elif int(ligne_util) != int(ligne):
+                    if int(ligne_util) != int(ligne):
                         # print("ligne resid : " + str(ligne_resid))
 
                         ligne_util = ligne
@@ -86,7 +82,47 @@ def scoring(path):
                 print(resid_tmp)
                 print(util_tmp)
 
-            # elif rowTop_resid < rowTop_util:                                    # Le batiment utilitaire est sous le batiment résidentiel
+            elif colTop_resid > colTop_util:                                    # Le batiment utilitaire est sous le batiment résidentiel
+
+                ligne_resid = rowTop_resid
+                ligne_util = rowTop_util
+
+                first_tour = True
+                for cases in resid[3]:
+                    ligne = cases[0]
+                    print("ligne :" + str(ligne))
+                    # print("ligne : " + str(ligne))
+                    col = cases[1]
+                    if first_tour:
+                        min = [ligne, col]
+                        resid_tmp.append(min)
+                        first_tour = False
+
+                    if int(ligne_resid) != int(ligne):
+                        # print("ligne resid : " + str(ligne_resid))
+
+                        ligne_resid = ligne
+                        min = [ligne, col]
+                        print("add : " + str(min))
+                        resid_tmp.append(min)
+                        # print("ligne resid after : " + str(ligne_resid))
+
+                for cases in util[3]:
+                    ligne = cases[0]
+                    # print("ligne : " + str(ligne))
+                    col = cases[1]
+                    if int(ligne_util) == int(ligne):
+                        max = [ligne, col]
+                    else:
+                        # print("ligne resid : " + str(ligne_resid))
+                        util_tmp.append(max)
+                        ligne_util = ligne
+                        # print("ligne resid after : " + str(ligne_resid))
+                util_tmp.append(max)
+
+                print(resid_tmp)
+                print(util_tmp)
+
             # else: # Mêmes coordonnées X, donc on regarde le y
             #     if colTop_resid > colTop_util:  # Le batiment résidentiel est à droite du batiment utilitaire
             # #     # ne garder que les coordonnées de la tranche la plus proche
