@@ -1,28 +1,29 @@
 class CityPlan:
 
-    #TODO : Modifier classe en fonction de la nouvelle classe (Project)
     def __init__(self, matrix, name, dist):
         self.matrix = matrix
-        self.nameProject = name
-        self.distManhattanMax = dist
-        self.nbProjectPlaced = 0
+        self.name_project = name
+        self.dist_manhattan_max = dist
 
-    def add(self, building, row: int, column: int):
-        if building.is_placeable(self, row, column):
-            building_row, building_column = building.matrix.shape
+    def add(self, project, row: int, column: int):
+        if project.is_placeable(self.matrix, row, column):
+            project_row, project_column = project.shape
 
-            idx_building_row = 0
+            idx_project_row = 0
 
             # on parcourt a partir de "row" definie jusqu'a
             # "row"+le nombre de lignes du batiments
-            for numLignes in range(row, row + building_row):
-                idx_building_column = 0
+            for num_lignes in range(row, row + project_row):
+                idx_project_column = 0
                 # on parcourt a partir de "column" definie jusqu'a
                 # la column+ le nombre de colonnes du batiments
-                for numColonnes in range(column, column + building_column):
-                    self.matrix[numLignes, numColonnes] = building.matrix[idx_building_row, idx_building_column]
-                    idx_building_column += 1
-                idx_building_row += 1
-            return building
+                for num_colonnes in range(column, column + project_column):
+                    #si dans la ville, c'est égale à un point et que le project est un # alors on peut le placer
+                    #sinon on laisse les points comme avant
+                    if self.matrix[num_lignes,num_colonnes]=='.' and project.matrix[idx_project_row,idx_project_column]=='#':
+                        self.matrix[num_lignes, num_colonnes] = project.matrix[idx_project_row, idx_project_column]
+                    idx_project_column += 1
+                idx_project_row += 1
+            return project
         else:
             return False
