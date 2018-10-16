@@ -14,9 +14,11 @@
 
 # [3, 1] ---> ligne 3 colonne 1
 #from itertools import islice
-
+from model import CityPlan
+from model import Residential
 
 def scoring(path):
+    score = 0
     utilitaires_list = []
     residential_list = []
 
@@ -220,6 +222,8 @@ def scoring(path):
             distance = distance_manhattan(all_resid, all_utils)
             print("distance = " + str(distance) + " resid :" + str(all_resid) + " utils :" + str(all_utils))
 
+            # if distance <= str(CityPlan.distManhattanMax):
+            #     score += str(Residential.capacity)
     print(all_resid)
     print(all_utils)
 
