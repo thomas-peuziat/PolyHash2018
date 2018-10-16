@@ -95,7 +95,7 @@ def textify(replica_list, filename):
                               str(replica_list[replica_idx][1][1]) + '\n')
 
 
-def imgify(cityplan, replica_list, filename):
+def imgify(cityplan, project_list, replica_list, filename):
     """
         Créer une image représentant le plan final, situé dans le dossier "[...]/polyhash2018/data/output/", grâce aux données en entrées
 
@@ -116,12 +116,26 @@ def imgify(cityplan, replica_list, filename):
     row_max, column_max = cityplan.matrix.shape
     data = np.zeros((row_max, column_max, 3), dtype=np.uint8)
 
-    for idx_row, val_row in enumerate(cityplan.matrix):
-        for idx_column, val_element in enumerate(val_row):
-            if val_element == '.':
-                data[idx_row][idx_column] = [0, 0, 0]
-            else:
-                data[idx_row][idx_column] = [255, 255, 255]
+    for replica in replica_list:
+        position = replica[1]
+        project = project_list[replica[0]]
+        color = [255, 255, 255]
+
+        if type(project) == Residential:
+            color = [255, 0, 0]
+        elif type(project) == Utility:
+            color = [0, 180, 0]
+
+        for idx_row, val_row in enumerate(project.matrix):
+            for idx_column, val_element in enumerate(val_row):
+
+
+                real_row_position = idx_row + position[0]
+                real_column_position = idx_column + position[1]
+                if val_element == '#':
+                    data[real_row_position][real_column_position] = color
+                elif val_element == '.':
+                    data[real_row_position][real_column_position] = [0, 0, 0]
 
     img = smp.toimage(data)
     img.save(path)

@@ -25,10 +25,10 @@ def random_solver(cityplan: CityPlan, project_list: list, error_max: int):
                 error -= 1
                 random_pos = (random.randint(0, row_max - 1), random.randint(0, column_max - 1))
 
-        print("Random solver for :", cityplan.nameProject, "\n -------------")
+        print("Random solver for :", cityplan.name_project, "\n -------------")
         print("Replica count :", len(replica_list), '\n -------------')
-        print("You can check the output in polyhash2018/data/output/" + cityplan.nameProject + ".out")
-        print("Image of the CityPlan is available in polyhash2018/data/output/" + cityplan.nameProject + ".png")
+        print("You can check the output in polyhash2018/data/output/" + cityplan.name_project + ".out")
+        print("Image of the CityPlan is available in polyhash2018/data/output/" + cityplan.name_project + ".png")
         print(" -------------")
 
         return cityplan, replica_list
