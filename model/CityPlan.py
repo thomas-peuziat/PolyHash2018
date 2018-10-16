@@ -1,12 +1,13 @@
 class CityPlan:
 
+    #TODO : Modifier classe en fonction de la nouvelle classe (Project)
     def __init__(self, matrix, name, dist):
         self.matrix = matrix
         self.nameProject = name
         self.distManhattanMax = dist
         self.nbProjectPlaced = 0
 
-    def add(self, building, row: int, column: int) -> bool:
+    def add(self, building, row: int, column: int):
         if building.is_placeable(self, row, column):
             building_row, building_column = building.matrix.shape
 
