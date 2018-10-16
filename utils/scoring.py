@@ -10,6 +10,9 @@
 # Ce scoring va permettre d'analyser le fichier d'une entrée formatée afin d'endéduire
 # le score de notre implémentation du Google HashCode 2018
 
+
+
+# [3, 1] ---> ligne 3 colonne 1
 #from itertools import islice
 
 
@@ -24,23 +27,71 @@ def scoring(path):
 
     ##TODO: Calculer la distance de Manhattan la plus courte
 
-    for resid in residential_list:
-        xTop_resid = resid[1]
-        yTop_resid = resid[2]
+    for resid in residential_list:                                                  # Pour chaque résidence
+        rowTop_resid = resid[1]
+        colTop_resid = resid[2]
 
-        for util in utilitaires_list:
-            xTop_util = util[1]
-            yTop_util = util[2]
+        for util in utilitaires_list:                                                   # Pour chaque utilitaire
+            rowTop_util = util[1]
+            colTop_util = util[2]
+            print(colTop_resid)
+            print(colTop_util)
+            # print(xTop_util)
+            # print(yTop_util)
 
-            if xTop_resid > xTop_util:                  #Le batiment résidentiel est sous le batiment utilitaire
-                #ne garder que les coordonnées de la tranche la plus proche
-            elif xTop_resid < xTop_util:
-                # Le batiment utilitaire est sous le batiment résidentiel
-            else: # Mêmes coordonnées X, donc on regarde le y
-                if yTop_resid > yTop_util:  # Le batiment résidentiel est à droite du batiment utilitaire
-                # ne garder que les coordonnées de la tranche la plus proche
-                elif yTop_resid < yTop_util:
-            # Le batiment utilitaire est à droite du batiment résidentiel
+            resid_tmp =[]
+            util_tmp = []
+            if colTop_resid < colTop_util:                  #Le batiment résidentiel est sous le batiment utilitaire
+
+                ligne_resid = rowTop_resid
+                ligne_util = rowTop_util
+                for cases in resid[3]:
+                    ligne = cases[0]
+                    # print("ligne : " + str(ligne))
+                    col = cases[1]
+                    if int(ligne_resid) == int(ligne):
+                        max = [ligne, col]
+                    else:
+                        # print("ligne resid : " + str(ligne_resid))
+                        resid_tmp.append(max)
+                        ligne_resid = ligne
+                        # print("ligne resid after : " + str(ligne_resid))
+                resid_tmp.append(max)
+
+                first_tour = True
+                for cases in util[3]:
+                    ligne = cases[0]
+                    print("ligne :" + str(ligne))
+                    # print("ligne : " + str(ligne))
+                    col = cases[1]
+                    if first_tour:
+                        min = [ligne, col]
+                        util_tmp.append(min)
+                        first_tour = False
+
+                    if int(ligne_util) == int(ligne):
+                        print()
+                        # min = [ligne, col]
+                        # print("add : " + str(min))
+                        # util_tmp.append(min)
+                    elif int(ligne_util) != int(ligne):
+                        # print("ligne resid : " + str(ligne_resid))
+
+                        ligne_util = ligne
+                        min = [ligne, col]
+                        print("add : " + str(min))
+                        util_tmp.append(min)
+                        # print("ligne resid after : " + str(ligne_resid))
+
+                print(resid_tmp)
+                print(util_tmp)
+
+            # elif rowTop_resid < rowTop_util:                                    # Le batiment utilitaire est sous le batiment résidentiel
+            # else: # Mêmes coordonnées X, donc on regarde le y
+            #     if colTop_resid > colTop_util:  # Le batiment résidentiel est à droite du batiment utilitaire
+            # #     # ne garder que les coordonnées de la tranche la plus proche
+            #     elif colTop_resid < colTop_util: #de
+            # # Le batiment utilitaire est à droite du batiment résidentiel
 
     # for util in lines:
     #     util_number_project = line.split()[0]
@@ -53,10 +104,9 @@ def scoring(path):
 def outputParser(path):
     with open(path, 'r') as input_file:
         input_file = open(path, 'r')
-        buildings_number = input_file.readline()                    #get the number of buidings placed in the city
+        buildings_number = input_file.readline()                    #get the number of buildings placed in the city
 
         lines = input_file.readlines()                              #read the other line from the second
-        input_file.close()
         utils = []
         resid = []
 
