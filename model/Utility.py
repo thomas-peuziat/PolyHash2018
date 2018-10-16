@@ -1,8 +1,8 @@
-from model.Building import Building
+from model.Project import Project
 
 
-class Utility(Building):
+class Utility(Project):
 
-    def __init__(self, id, matrix, id_building, pos_row, pos_column, type):
-        super().__init__(id, matrix, id_building, pos_row, pos_column)
+    def __init__(self, id, matrix, type):
+        super().__init__(id, matrix)
         self.type = type
