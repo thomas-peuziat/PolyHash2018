@@ -1,8 +1,8 @@
-from model.Building import Building
+from model.Project import Project
 
 
-class Residential(Building):
+class Residential(Project):
 
-    def __init__(self, id, matrix, id_building, pos_row, pos_column, capacity):
-        super().__init__(id, matrix, id_building, pos_row, pos_column)
+    def __init__(self, id, matrix, capacity):
+        super().__init__(id, matrix)
         self.capacity = capacity
