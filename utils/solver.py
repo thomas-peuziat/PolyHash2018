@@ -2,31 +2,33 @@ import random
 from model.CityPlan import CityPlan
 
 
-def random_solver(cityplan: CityPlan, building_dict: dict, error_max: int):
+def random_solver(cityplan: CityPlan, project_list: list, error_max: int):
     if error_max >= 0:
-        len_building_dict = len(building_dict)
-        list_building = list(building_dict.values())
+        error = error_max
+        len_project_list = len(project_list)
         row_max, column_max = cityplan.matrix.shape
-        list_placed_building = []
+        replica_list = []
 
-        while error_max > 0:
-            random_idx = random.randint(0, len_building_dict-1)
-            random_row = random.randint(0, row_max-1)
-            random_column = random.randint(0, column_max-1)
-            if cityplan.add(list_building[random_idx], random_row, random_column):
-                list_building[random_idx].row = random_row
-                list_building[random_idx].column = random_column
-                list_building[random_idx].placed = True
-                for key in building_dict:
-                    if building_dict[key] == list_building[random_idx]:
-                        id_project = int(key.split('.')[4])
-                        building = [id_project, [list_building[random_idx].row, list_building[random_idx].column]]
-                        list_placed_building.append(building)
-                        cityplan.nbProjectPlaced += 1
+        random_idx = random.randint(0, len_project_list - 1)
+        random_pos = (random.randint(0, row_max - 1), random.randint(0, column_max - 1))
+        while error > 0:
+            if cityplan.add(project_list[random_idx], random_pos[0], random_pos[1]):
+                error = error_max
+
+                project_list[random_idx].list_pos_replica.append((random_pos[0], random_pos[1]))
+                replica = [random_idx, (random_pos[0], random_pos[1])]
+                replica_list.append(replica)
+
+                random_idx = random.randint(0, len_project_list - 1)
+                random_pos = (random.randint(0, row_max - 1), random.randint(0, column_max - 1))
             else:
-                error_max -= 1
+                error -= 1
+                random_pos = (random.randint(0, row_max - 1), random.randint(0, column_max - 1))
 
-        print("Random solver for :", cityplan.nameProject)
-        print("Placed building :", cityplan.nbProjectPlaced)
-        return cityplan, list_placed_building
+        print("Random solver for :", cityplan.nameProject, "\n -------------")
+        print("Replica count :", len(replica_list), '\n -------------')
+        print("You can check the output in polyhash2018/data/output/" + cityplan.nameProject + ".out")
+        print("Image of the CityPlan is available in polyhash2018/data/output/" + cityplan.nameProject + ".png")
+        print(" -------------")
 
+        return cityplan, replica_list

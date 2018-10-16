@@ -11,17 +11,16 @@ import numpy as np
 from model.CityPlan import CityPlan
 from model.Residential import Residential
 from model.Utility import Utility
-
 import scipy.misc as smp
 
 
-def parse(filename) -> (CityPlan, dict):
+def parse(filename) -> (CityPlan, list):
     """
     Extrait les données d'un fichier formaté, situé dans le dossier "[...]/polyhash2018/data/input/"
 
     :param filename: Nom du fichier (sans extension)
-    :return: Données utilisables (CityPlan et project_dict)
-    :rtype: (CityPlan, dict)
+    :return: Données utilisables (CityPlan et project_tab)
+    :rtype: (CityPlan, list)
 
     :Example:
         parse("a_example")
@@ -29,6 +28,8 @@ def parse(filename) -> (CityPlan, dict):
 
     path = os.path.join(os.path.curdir, 'data', 'input', filename + '.in')
     with open(path, 'r') as input_file:
+
+        #### CityPlan
         grid_string = input_file.readline()  # Ex: "4 7 2 3\n"
         grid = grid_string.splitlines()[0].split()  # ['4', '7', '2', '3']
         for i in range(len(grid)):  # [4, 7, 2, 3]
@@ -36,10 +37,9 @@ def parse(filename) -> (CityPlan, dict):
 
         city_plan = CityPlan(np.full((grid[0], grid[1]), '.'), filename, grid[2])
 
+        #### Project
         id_project = 0
-
-        # project_dict : [R|U].ligne.colonne.[capacite|type].id
-        project_dict = {}
+        project_tab = []
         while 'le fichier contient des lignes non analysees':
             description_string = input_file.readline()  # "R 3 2 25\n"
 
@@ -56,59 +56,58 @@ def parse(filename) -> (CityPlan, dict):
                 plan_np = np.asarray(plan)
 
             if description[0] == 'R':
-                project = Residential(plan_np, int(description[3]))
-                key = "R." + description[1] + '.' + description[2] + '.' + description[3] + '.' + str(id_project)
-                project_dict[key] = project
+                project = Residential(id_project, plan_np, int(description[3]))
+                project_tab.append(project)
                 id_project += 1
             elif description[0] == 'U':
-                project = Utility(plan_np, int(description[3]))
-                key = "U." + description[1] + '.' + description[2] + '.' + description[3] + '.' + str(id_project)
-                project_dict[key] = project
+                project = Utility(id_project, plan_np, int(description[3]))
+                project_tab.append(project)
                 id_project += 1
 
-    return city_plan, project_dict
+    return city_plan, project_tab
 
 
-def textify(building_list, filename):
+def textify(replica_list, filename):
     """
     Créer un fichier de sortie, situé dans le dossier "[...]/polyhash2018/data/output/", grâce aux données en entrées
 
-    :param building_list: Liste de projets placés (bâtiments)
+    :param replica_list: Liste des projets placés (liste des répliques de projets réalisées)
     :param filename: Nom de sortie du fichier (sans extension)
 
     :Example:
-        building_list = [3, [[0, [0, 0]], [0, [5, 5]], [1, [3, 8]]]]
+        replica_list = [[0, [0, 0]], [0, [5, 5]], [1, [3, 8]]]
         ...
-        textify(building_list, "a_example")
+        textify(replica_list, "a_example")
     """
 
     path = os.path.join(os.path.curdir, 'data', 'output', filename + '.out')
     with open(path, 'w') as output_file:
-        output_file.write(str(len(building_list)) + '\n')
+        output_file.write(str(len(replica_list)) + '\n')
 
         # [3, [[0, [0, 0]], [0, [5, 5]], [1, [3, 8]]]]
         # Correspond à :
-        # [len_building_list, [building_list]]
-        # building_list = [building]
-        # building = [id_project, [top_left_row, top_left_column]]
-        for i in range(len(building_list)):
-            output_file.write(str(building_list[i][0]) + ' ' + str(building_list[i][1][0]) + ' ' +
-                              str(building_list[i][1][1]) + '\n')
+        # [len_replica_list, [replica_list]]
+        # replica_list = [replica]
+        # replica = [id_project, [top_left_row, top_left_column]]
+
+        for replica_idx in range(len(replica_list)):
+            output_file.write(str(replica_list[replica_idx][0]) + ' ' + str(replica_list[replica_idx][1][0]) + ' ' +
+                              str(replica_list[replica_idx][1][1]) + '\n')
 
 
-def imgify(cityplan, building_list, filename):
+def imgify(cityplan, replica_list, filename):
     """
         Créer une image représentant le plan final, situé dans le dossier "[...]/polyhash2018/data/output/", grâce aux données en entrées
 
         :param cityplan: Objet CityPlan
-        :param building_list: Liste de projets placés (bâtiments)
+        :param replica_list: Liste des projets placés (liste des répliques de projets réalisées)
         :param filename: Nom de sortie du fichier (sans extension)
 
         :Example:
             cityplan = CityPlan( ...
-            building_list = [3, [[0, [0, 0]], [0, [5, 5]], [1, [3, 8]]]]
+            replica_list = [3, [[0, [0, 0]], [0, [5, 5]], [1, [3, 8]]]]
             ...
-            imgify(cityplan, building_list, "a_example")
+            imgify(cityplan, replica_list, "a_example")
         """
 
     # TODO : afficher en couleurs les batiments
