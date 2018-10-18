@@ -27,6 +27,9 @@ crashlytics-build.properties
 fabric.properties
 
 ### Python ###
+
+polyenv/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

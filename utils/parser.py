@@ -50,19 +50,23 @@ def parse(filename) -> (CityPlan, list):
             plan_string = []
             plan = []
             plan_np = None
+            project = None
             for i in range(int(description[1])):
                 plan_string.append(input_file.readline())  # ['.#\n', '##\n', '.#\n']
                 plan.append(list(plan_string[i].splitlines()[0]))  # [['.', '#'], ['#', '#'], ['.', '#']]
                 plan_np = np.asarray(plan)
+                for idx_row, val_row in enumerate(plan_np):
+                    for idx_column, val_element in enumerate(val_row):
+                        if val_element == '#':
+                            plan_np[idx_row][idx_column] = id_project
 
             if description[0] == 'R':
                 project = Residential(id_project, plan_np, int(description[3]))
-                project_tab.append(project)
-                id_project += 1
             elif description[0] == 'U':
                 project = Utility(id_project, plan_np, int(description[3]))
-                project_tab.append(project)
-                id_project += 1
+
+            project_tab.append(project)
+            id_project += 1
 
     return city_plan, project_tab
 
@@ -128,13 +132,11 @@ def imgify(cityplan, project_list, replica_list, filename):
 
         for idx_row, val_row in enumerate(project.matrix):
             for idx_column, val_element in enumerate(val_row):
-
-
                 real_row_position = idx_row + position[0]
                 real_column_position = idx_column + position[1]
-                if val_element == '#':
+                if val_element != '.':
                     data[real_row_position][real_column_position] = color
-                elif val_element == '.':
+                else:
                     data[real_row_position][real_column_position] = [0, 0, 0]
 
     img = smp.toimage(data)
