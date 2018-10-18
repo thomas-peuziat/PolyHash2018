@@ -22,7 +22,7 @@ class Project:
         try:
             idx_project_row = 0
             idx_project_column = 0
-            if destination_matrix[row, column] == '#' and self.matrix[idx_project_row, idx_project_column] == '#':
+            if destination_matrix[row, column] != '.' and self.matrix[idx_project_row, idx_project_column] != '.':
                 return False
             else:
 
@@ -35,7 +35,7 @@ class Project:
                     # on parcourt a partir de la column definie jusqu'a
                     # la column + le nombre de colonnes du batiments
                     for num_colonnes in range(column, column + project_column):
-                        if destination_matrix[num_lignes, num_colonnes] == '#' and self.matrix[idx_project_row, idx_project_column] == '#':
+                        if destination_matrix[num_lignes, num_colonnes] != '.' and self.matrix[idx_project_row, idx_project_column] != '.':
                             return False
                         idx_project_column += 1
                     idx_project_row += 1
