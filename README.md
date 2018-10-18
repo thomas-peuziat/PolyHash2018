@@ -12,3 +12,9 @@
 Killian -> scoring <br/>
 Thomas -> parser + random_solver<br/>
 Clément -> structure de données (classes + méthodes)<br/>
+
+#### Bibliothèques nécéssaires
+
+numpy 1.15.2
+scipy 1.1.0
+Pillow 5.3.0
