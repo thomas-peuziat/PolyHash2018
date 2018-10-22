@@ -54,12 +54,11 @@ def parse(filename) -> (CityPlan, list):
             for i in range(int(description[1])):
                 plan_string.append(input_file.readline())  # ['.#\n', '##\n', '.#\n']
                 plan.append(list(plan_string[i].splitlines()[0]))  # [['.', '#'], ['#', '#'], ['.', '#']]
-                plan_np = np.asarray(plan)
+                plan_np = np.asarray(plan, dtype=np.dtype('U5')) # https://docs.scipy.org/doc/numpy-1.15.1/reference/arrays.dtypes.html#string-dtype-note
                 for idx_row, val_row in enumerate(plan_np):
                     for idx_column, val_element in enumerate(val_row):
                         if val_element == '#':
-                            plan_np[idx_row][idx_column] = id_project
-
+                            plan_np[idx_row][idx_column] = str(id_project)
             if description[0] == 'R':
                 project = Residential(id_project, plan_np, int(description[3]))
             elif description[0] == 'U':
@@ -141,4 +140,4 @@ def imgify(cityplan, project_list, replica_list, filename):
 
     img = smp.toimage(data)
     img.save(path)
-    #img.show()
+    # img.show()
