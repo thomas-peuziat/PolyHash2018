@@ -34,15 +34,18 @@ def scoring(path, cityplan, project_list):
     for residence in residential_list:
         all_resid = residence[3]
         number_project = residence[0]
+        types = []
         for utilitaires in utilitaires_list:
             all_utils = utilitaires[3]
-
+            util_project = utilitaires[0]
             distance = distance_manhattan(all_resid, all_utils)
             print("distance = " + str(distance) + " resid :" + str(all_resid) + " utils :" + str(all_utils))
             print(number_project)
             # print(cityplan.dist_manhattan_max)
             if distance <= int(cityplan.dist_manhattan_max):
-                score += int(project_list[int(number_project)].capacity)
+                if not(project_list[int(util_project)].type in types):
+                    score += int(project_list[int(number_project)].capacity)
+                    types.append(project_list[int(util_project)].type)
 
     print("Score = " + str(score))
     print(all_resid)
@@ -103,7 +106,7 @@ def coordinates_adaptation(buildingPlan, rowTop, colTop):
     for line in buildingPlan:
         indexCol = 0
         for col in line:
-            if col == "#":
+            if col != ".":
                 list_coordinates.append([indexRow, indexCol])
             indexCol += 1
         indexRow += 1
@@ -114,6 +117,16 @@ def coordinates_adaptation(buildingPlan, rowTop, colTop):
     # print(list_coordinates)
 
     return list_coordinates
+
+
+
+
+
+"""
+        Optimisation des cases sur lesquelles il faut réellement calculer la distance de Manhattan
+        Par exemple sur deux batiments sont l'un à coté de l'autre, il est inutile de calculer la distance de Manhattan des deux extrémitées
+
+"""
 
 
 # def coordinates_optimisation(list_residence, list_utilitaire):
