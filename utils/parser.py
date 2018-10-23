@@ -113,7 +113,6 @@ def imgify(cityplan, project_list, replica_list, filename):
             imgify(cityplan, replica_list, "a_example")
         """
 
-    # TODO : afficher en couleurs les batiments
     path = os.path.join(os.path.curdir, 'data', 'output', filename + '.png')
 
     row_max, column_max = cityplan.matrix.shape
@@ -140,4 +139,5 @@ def imgify(cityplan, project_list, replica_list, filename):
 
     img = smp.toimage(data)
     img.save(path)
+    print("Image of the CityPlan is available in polyhash2018/data/output/" + cityplan.name_project + ".png")
     # img.show()

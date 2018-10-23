@@ -1,3 +1,8 @@
+"""SOLVER : Contient un certain nombre de fonctions permettant le remplissage plus ou moins optimisé d'un CityPlan
+avec des replica de Project
+
+"""
+
 import random
 from model.CityPlan import CityPlan
 
@@ -28,7 +33,7 @@ def random_solver(cityplan: CityPlan, project_list: list, error_max: int):
         print("Random solver for :", cityplan.name_project, "\n -------------")
         print("Replica count :", len(replica_list), '\n -------------')
         print("You can check the output in polyhash2018/data/output/" + cityplan.name_project + ".out")
-        print("Image of the CityPlan is available in polyhash2018/data/output/" + cityplan.name_project + ".png")
+
         print(" -------------")
 
         return cityplan, replica_list
