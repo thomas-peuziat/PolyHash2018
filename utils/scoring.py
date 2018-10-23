@@ -26,7 +26,7 @@ def scoring_from_replica_list(replica_list, cityplan, project_list):
         project_number = replica[0]  # get the number of the building project
         ## Get top left coordinates
         row_top = replica[1][0]
-        col_top = replica[1][0]
+        col_top = replica[1][1]
 
         plan = project_list[int(project_number)].matrix
         adapted_coordinates = _coordinates_adaptation(plan, row_top, col_top)
@@ -46,18 +46,19 @@ def scoring_from_output(filename, cityplan, project_list):
 def _scoring(utilitaires_list, residential_list, cityplan, project_list):
     tested_residential = 0
     score = 0
+    len_residential_list = len(residential_list)
 
     print("...Scoring starting...")
-    print("Number of residential replica :", len(residential_list))
+    print("Number of residential replica :", len_residential_list)
     print("Number of utilities replica :", len(utilitaires_list))
 
     for residence in residential_list:
         if (tested_residential % 100) == 0 and tested_residential != 0:
-            print(" -------")
-            print("Residential tested :", tested_residential)
+            print(" ------- " + "{0:.2f}".format(tested_residential/len_residential_list*100) + '%')
+            print("Residential tested :", tested_residential, "(of " + str(len_residential_list) + ")")
             print("Partial scoring :", score)
-            print("Points per residential :", score / tested_residential)
-            print("Approximated final score :", (score / tested_residential) * len(residential_list))
+            print("Points per residential :", "{0:.2f}".format(score / tested_residential))
+            print("Approximated final score :", "{0:.2f}".format((score / tested_residential) * len_residential_list))
 
         all_resid = residence[3]
         number_project = residence[0]

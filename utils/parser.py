@@ -35,7 +35,7 @@ def parse(filename) -> (CityPlan, list):
         for i in range(len(grid)):  # [4, 7, 2, 3]
             grid[i] = int(grid[i])
 
-        city_plan = CityPlan(np.full((grid[0], grid[1]), '.'), filename, grid[2])
+        city_plan = CityPlan(np.full((grid[0], grid[1]), '.', dtype=np.dtype('U5')), filename, grid[2])
 
         #### Project
         id_project = 0
@@ -98,12 +98,12 @@ def textify(replica_list, filename):
                               str(replica_list[replica_idx][1][1]) + '\n')
 
 
-def imgify(cityplan, project_list, replica_list, filename):
+def imgify(filename, cityplan, project_list):
     """
         Créer une image représentant le plan final, situé dans le dossier "[...]/polyhash2018/data/output/", grâce aux données en entrées
 
         :param cityplan: Objet CityPlan
-        :param replica_list: Liste des projets placés (liste des répliques de projets réalisées)
+        :param project_list: Liste des projets
         :param filename: Nom de sortie du fichier (sans extension)
 
         :Example:
@@ -116,26 +116,23 @@ def imgify(cityplan, project_list, replica_list, filename):
     path = os.path.join(os.path.curdir, 'data', 'output', filename + '.png')
 
     row_max, column_max = cityplan.matrix.shape
-    data = np.zeros((row_max, column_max, 3), dtype=np.uint8)
+    data = np.zeros((row_max, column_max, 3), dtype=np.dtype(int))
 
-    for replica in replica_list:
-        position = replica[1]
-        project = project_list[replica[0]]
-        color = [255, 255, 255]
+    black = [0, 0, 0]
+    green = [0, 180, 0]
+    red = [255, 0, 0]
 
-        if type(project) == Residential:
-            color = [255, 0, 0]
-        elif type(project) == Utility:
-            color = [0, 180, 0]
+    for idx_row, val_row in enumerate(cityplan.matrix):
+        for idx_column, val_element in enumerate(val_row):
 
-        for idx_row, val_row in enumerate(project.matrix):
-            for idx_column, val_element in enumerate(val_row):
-                real_row_position = idx_row + position[0]
-                real_column_position = idx_column + position[1]
-                if val_element != '.':
-                    data[real_row_position][real_column_position] = color
-                else:
-                    data[real_row_position][real_column_position] = [0, 0, 0]
+            if val_element == '.':
+                data[idx_row][idx_column] = black
+            else:
+                val_element = int(val_element)
+                if type(project_list[val_element]) == Utility:
+                    data[idx_row][idx_column] = green
+                elif type(project_list[val_element]) == Residential:
+                    data[idx_row][idx_column] = red
 
     img = smp.toimage(data)
     img.save(path)
