@@ -44,58 +44,97 @@ class Project:
         except IndexError:
             return False
 
-    #matrix = city_plan
-    def get_manhattan_surface(self, dist, matrix):
-        #Exemple avec utili
-        #list_coordinates_full = [(3,2),(4,1),(4,2),(5,1),(5,3)]
 
-        #Exemple avec resi
-        list_coordinates_full = [(1,4),(2,3),(2,4),(3,3),(3,5)]
-        list_coordinates_empty = []
+    """
+    Fonction permettant de retourner une liste de position représentant la surface couverte par (le batiment + la distance de manhattan)
+    :parameter
+    dist = la distance de manhattan
+    matrix = la matrice du CityPlan
+    list_coordinates_full = les positions remplies par le batiment
+    """
+    def get_manhattan_surface(self, dist, matrix, list_coordinates_full):
+        list_valid_coordinates = []
         nb_row_matrix, nb_column_matrix = matrix.shape
 
-        for i in range (dist):
+        for i in range(dist):
+
             for case in list_coordinates_full:
-                if(0<=case[0]+(dist-i)<=nb_row_matrix and matrix[case[0]+(dist-i),case[1]]=='.' and (case[0]+(dist-i),case[1]) not in list_coordinates_empty):
-                    list_coordinates_empty.append((case[0]+(dist-i),case[1]))
-                    matrix[case[0]+(dist-i)][case[1]]='#'
+                haut=False
+                base=False
+                droite=False
+                gauche=False
 
-                if (0<=case[0]-(dist-i)<=nb_row_matrix and matrix[case[0]-(dist-i), case[1]]=='.' and (case[0]-(dist-i),case[1]) not in list_coordinates_empty):
-                    list_coordinates_empty.append((case[0]-(dist-i),case[1]))
-                    matrix[case[0] - (dist - i)][case[1]] = '#'
+                point_haut=None
+                point_droit=None
 
-                if (0<=case[1]+(dist-i)<=nb_column_matrix and matrix[case[0], case[1]+(dist-i)]=='.' and (case[0],case[1]+(dist-i)) not in list_coordinates_empty):
-                    list_coordinates_empty.append((case[0],case[1]+(dist-i)))
-                    matrix[case[0]][case[1]+(dist-i)] = '#'
+                #tester vers le haut
+                if 0 <= case[0]-(dist-i) <= nb_row_matrix-1:
+                    if matrix[case[0]-(dist-i), case[1]] == '.':
+                        if (case[0]-(dist-i), case[1]) not in list_valid_coordinates:
+                            list_valid_coordinates.append((case[0]-(dist-i), case[1]))
+                            matrix[case[0] - (dist - i)][case[1]] = '#'
+                            point_haut=(case[0]-(dist-i), case[1])
+                            haut=True
 
-                if (0<=case[1]-(dist-i)<=nb_column_matrix and matrix[case[0], case[1]-(dist-i)]=='.' and (case[0],case[1]-(dist-i)) not in list_coordinates_empty):
-                    list_coordinates_empty.append((case[0],case[1]-(dist-i)))
-                    matrix[case[0]][case[1]-(dist-i)] = '#'
+                # tester vers la droite
+                if 0 <= case[1] + (dist - i) <= nb_column_matrix - 1:
+                    if matrix[case[0], case[1] + (dist - i)] == '.':
+                        if (case[0], case[1] + (dist - i)) not in list_valid_coordinates:
+                            list_valid_coordinates.append((case[0], case[1] + (dist - i)))
+                            matrix[case[0]][case[1] + (dist - i)] = '#'
+                            point_droit=(case[0], case[1] + (dist - i))
+                            droite=True
 
-                if(i>0):
-                    diff=dist-i
-                    #bas droite
-                    if(0<=case[0]+i<=nb_row_matrix and 0<=case[1]+diff<=nb_column_matrix):
-                        if(matrix[case[0]+i, case[1]+diff]=='.'):
-                            list_coordinates_empty.append((case[0]+i, case[1]+diff))
-                            matrix[case[0] + i, case[1] + diff]='#'
+                #tester vers le bas
+                #si notre cas ne dépasse pas les limites de la matrice
+                if 0 <= case[0]+(dist-i) <= nb_row_matrix-1:
+                    #si la case testée est un point (=> la case est libre)
+                    if matrix[case[0]+(dist-i), case[1]] == '.':
+                        #si la case n'est pas déjà présente dans notre liste
+                        if (case[0]+(dist-i), case[1]) not in list_valid_coordinates:
+                            list_valid_coordinates.append((case[0]+(dist-i), case[1]))
+                            matrix[case[0]+(dist-i)][case[1]] = '#'
+                            bas=True
 
-                    #bas gauche
-                    if(0<=case[0]+i<=nb_row_matrix and 0<=case[1]-diff<=nb_column_matrix):
-                        if(matrix[case[0]+i, case[1]-diff]=='.'):
-                            list_coordinates_empty.append((case[0]+i, case[1]-diff))
-                            matrix[case[0] + i, case[1] - diff]='#'
+                #tester vers la gauche
+                if 0 <= case[1]-(dist-i) <= nb_column_matrix-1:
+                    if matrix[case[0], case[1]-(dist-i)] == '.':
+                        if (case[0], case[1]-(dist-i)) not in list_valid_coordinates:
+                            list_valid_coordinates.append((case[0], case[1]-(dist-i)))
+                            matrix[case[0]][case[1]-(dist-i)] = '#'
+                            gauche=True
 
-                    #haut droite
-                    if (0 <= case[0] + diff <= nb_row_matrix and 0 <= case[1] + i <= nb_column_matrix):
-                        if (matrix[case[0] + diff, case[1] + i] == '.'):
-                            list_coordinates_empty.append((case[0] + diff, case[1] + i))
-                            matrix[case[0] + diff, case[1] + i] = '#'
 
-                    #haut gauche
-                    if (0 <= case[0] - diff <= nb_row_matrix and 0 <= case[1] + i <= nb_column_matrix):
-                        if (matrix[case[0] - diff, case[1] + i] == '.'):
-                            list_coordinates_empty.append((case[0] - diff, case[1] + i))
-                            matrix[case[0] - diff, case[1] + i] = '#'
-        print(list_coordinates_empty)
-        print(len(list_coordinates_empty))
+                print("\n",case,'\n', matrix,list_valid_coordinates,"\n")
+
+                if haut and droite:
+                    #diagonale haut droite
+                    #print(point_haut,'\n',point_droit,'\n')
+                    self._diagonale_haut_droit(point_haut,point_droit,list_valid_coordinates, matrix)
+
+                # if droite and bas:
+                #     #diagonale bas droite
+                #
+                # if bas and gauche:
+                #     #diagonale bas gauche
+                #
+                # if haut and gauche:
+                #     #diagonale haut gauche
+
+
+        return list_valid_coordinates
+
+
+    def _diagonale_haut_droit(self, point_A, point_B, list_valid_coordinates, matrix):
+        nb_row_matrix, nb_column_matrix = matrix.shape
+
+
+        while point_A[0] != point_B[0] and point_A[1] != point_B[1]:
+            point_A = (point_A[0]+1, point_A[1]+1)
+
+            if 0 <= point_A[0]<= nb_row_matrix - 1 and 0 <= point_A[1] <= nb_column_matrix - 1:
+                if matrix[point_A[0], point_A[1]] == '.':
+                    if (point_A[0], point_A[1]) not in list_valid_coordinates:
+                        matrix[point_A[0], point_A[1]] = '#'
+    #TODO si une surface dépasse de la matrice, on perd des diagonales -- y remédier
+        return ""
