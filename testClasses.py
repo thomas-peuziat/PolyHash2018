@@ -38,6 +38,8 @@ utili = Utility(0,matBuild2, 5)
 
 # Exemple avec resi
 list_coordinates_full_resi = [(4, 2), (4, 3), (4, 4), (5, 2), (5, 3), (5, 4), (6, 2), (6, 3), (6, 4)]
-resi.get_manhattan_surface(5, c.matrix, list_coordinates_full_resi)
+print(resi.get_manhattan_surface(2, c.matrix, list_coordinates_full_resi))
+print(len(resi.get_manhattan_surface(2, c.matrix, list_coordinates_full_resi)))
+
 print(c.matrix)
 
