@@ -7,7 +7,7 @@
 #
 #
 #
-# Ce scoring va permettre d'analyser le fichier d'une entrée formatée afin d'endéduire
+# Ce scoring va permettre d'analyser le fichier d'une entrée formatée afin d'en déduire
 # le score de notre implémentation du Google HashCode 2018
 
 
@@ -20,7 +20,7 @@ import os.path
 
 
 def scoring_from_replica_list(replica_list, cityplan, project_list):
-    utilitaires_list = []
+    utility_list = []
     residential_list = []
     for replica in replica_list:
         project_number = replica[0]  # get the number of the building project
@@ -32,10 +32,10 @@ def scoring_from_replica_list(replica_list, cityplan, project_list):
         adapted_coordinates = _coordinates_adaptation(plan, row_top, col_top)
 
         if type(project_list[int(project_number)]) is Utility.Utility:  # Batiments utilitaire
-            utilitaires_list.append([project_number, row_top, col_top, adapted_coordinates])
+            utility_list.append([project_number, row_top, col_top, adapted_coordinates])
         else:
             residential_list.append([project_number, row_top, col_top, adapted_coordinates])
-    return _scoring(utilitaires_list, residential_list, cityplan, project_list)
+    return _scoring(utility_list, residential_list, cityplan, project_list)
 
 
 def scoring_from_output(filename, cityplan, project_list):
@@ -52,6 +52,11 @@ def _scoring(utilitaires_list, residential_list, cityplan, project_list):
     print("Number of residential replica :", len_residential_list)
     print("Number of utilities replica :", len(utilitaires_list))
 
+
+
+    ## -------------------------------------------------------
+    ## -------------- Méthode non optimisées -----------------
+    ## -------------------------------------------------------
     for residence in residential_list:
         if (tested_residential % 100) == 0 and tested_residential != 0:
             print(" ------- " + "{0:.2f}".format(tested_residential/len_residential_list*100) + '%')
@@ -72,6 +77,27 @@ def _scoring(utilitaires_list, residential_list, cityplan, project_list):
                     score += int(project_list[int(number_project)].capacity)
                     types.append(project_list[int(util_project)].type)
         tested_residential += 1
+
+    ## -------------------------------------------------------
+    ## ---------------- Méthode optimisées -------------------
+    ## -------------------------------------------------------
+
+    for residence in residential_list:
+
+        all_resid = residence[3]
+        number_project = residence[0]
+        types = []
+        manhattan_residence_area = [] ##project_list[int(number_project)].get_manhattan_perimeter ##
+
+        for coordinates in manhattan_residence_area:
+            if str(cityplan.matrix[coordinates]) != ".":
+                building = project_list[int(cityplan.matrix[coordinates])]
+                if building is Utility.Utility:
+                    if not(building.type in types):
+                        types.append(building.type)
+                        score += int(project_list[int(number_project)].capacity)
+
+
 
     print(" =-=-=-=-=-= =-=-=-=-=-=")
     print("Final score :", score)
