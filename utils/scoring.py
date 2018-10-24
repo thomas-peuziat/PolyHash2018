@@ -1,8 +1,8 @@
-#Scoring
+# Scoring
 #
 #
 #
-#Permet de calculer le score d'un output
+# Permet de calculer le score d'un output
 #
 #
 #
@@ -11,50 +11,75 @@
 # le score de notre implémentation du Google HashCode 2018
 
 
-
 # [3, 1] ---> ligne 3 colonne 1
-#from itertools import islice
+# from itertools import islice
 from model import CityPlan
 from model import Residential
 from model import Utility
+import os.path
 
-def scoring(path, cityplan, project_list):
-    score = 0
+
+def scoring_from_replica_list(replica_list, cityplan, project_list):
     utilitaires_list = []
     residential_list = []
+    for replica in replica_list:
+        project_number = replica[0]  # get the number of the building project
+        ## Get top left coordinates
+        row_top = replica[1][0]
+        col_top = replica[1][1]
 
-    utilitaires_list, residential_list = outputParser(path, project_list)
+        plan = project_list[int(project_number)].matrix
+        adapted_coordinates = _coordinates_adaptation(plan, row_top, col_top)
 
-    print(utilitaires_list)
-    print(residential_list)
+        if type(project_list[int(project_number)]) is Utility.Utility:  # Batiments utilitaire
+            utilitaires_list.append([project_number, row_top, col_top, adapted_coordinates])
+        else:
+            residential_list.append([project_number, row_top, col_top, adapted_coordinates])
+    return _scoring(utilitaires_list, residential_list, cityplan, project_list)
 
 
-    all_resid = []
-    all_utils = []
+def scoring_from_output(filename, cityplan, project_list):
+    utilitaires_list, residential_list = _output_parser(filename, project_list)
+    return _scoring(utilitaires_list, residential_list, cityplan, project_list)
+
+
+def _scoring(utilitaires_list, residential_list, cityplan, project_list):
+    tested_residential = 0
+    score = 0
+    len_residential_list = len(residential_list)
+
+    print("...Scoring starting...")
+    print("Number of residential replica :", len_residential_list)
+    print("Number of utilities replica :", len(utilitaires_list))
+
     for residence in residential_list:
+        if (tested_residential % 100) == 0 and tested_residential != 0:
+            print(" ------- " + "{0:.2f}".format(tested_residential/len_residential_list*100) + '%')
+            print("Residential tested :", tested_residential, "(of " + str(len_residential_list) + ")")
+            print("Partial scoring :", score)
+            print("Points per residential :", "{0:.2f}".format(score / tested_residential))
+            print("Approximated final score :", "{0:.2f}".format((score / tested_residential) * len_residential_list))
+
         all_resid = residence[3]
         number_project = residence[0]
         types = []
         for utilitaires in utilitaires_list:
             all_utils = utilitaires[3]
             util_project = utilitaires[0]
-            distance = distance_manhattan(all_resid, all_utils)
-            print("distance = " + str(distance) + " resid :" + str(all_resid) + " utils :" + str(all_utils))
-            print(number_project)
-            # print(cityplan.dist_manhattan_max)
+            distance = _distance_manhattan(all_resid, all_utils)
             if distance <= int(cityplan.dist_manhattan_max):
-                if not(project_list[int(util_project)].type in types):
+                if not (project_list[int(util_project)].type in types):
                     score += int(project_list[int(number_project)].capacity)
                     types.append(project_list[int(util_project)].type)
+        tested_residential += 1
 
-    print("Score = " + str(score))
-    print(all_resid)
-    print(all_utils)
+    print(" =-=-=-=-=-= =-=-=-=-=-=")
+    print("Final score :", score)
+    print(" =-=-=-=-=-= =-=-=-=-=-=")
+    return score
 
 
-
-
-def distance_manhattan(tab_resid, tab_utils):
+def _distance_manhattan(tab_resid, tab_utils):
     min = 999
     for coor_resid in tab_resid:
         for coord_util in tab_utils:
@@ -62,45 +87,36 @@ def distance_manhattan(tab_resid, tab_utils):
             if dist < min:
                 min = dist
 
-
     return min
 
 
-
-def outputParser(path, project_list):
+def _output_parser(filename, project_list):
+    path = os.path.join(os.path.curdir, 'data', 'output', filename + '.out')
     with open(path, 'r') as input_file:
-        input_file = open(path, 'r')
-        buildings_number = input_file.readline()                    #get the number of buildings placed in the city
+        buildings_number = input_file.readline()  # get the number of buildings placed in the city
 
-        lines = input_file.readlines()                              #read the other line from the second
+        lines = input_file.readlines()  # read the other line from the second
         utils = []
         resid = []
 
         for line in lines:
-            project_number = line.split()[0]                        #get the number of the building project
-            print("num" + str(project_number))
+            project_number = line.split()[0]  # get the number of the building project
             ## Get top left coordinates
             row_top = line.split()[1]
             col_top = line.split()[2]
-            # print("X top : " + x_top)
-            # print("Y top : " + y_top)
 
             ##TODO: Récupération du plan du building
             plan = project_list[int(project_number)].matrix
-            print(plan)
-            adapted_coordinates = coordinates_adaptation(plan, row_top, col_top)
+            adapted_coordinates = _coordinates_adaptation(plan, row_top, col_top)
 
-            if type(project_list[int(project_number)]) is Utility.Utility :                                     #Batiments utilitaire
-                print("utilitaire ajouté")
+            if type(project_list[int(project_number)]) is Utility.Utility:  # Batiments utilitaire
                 utils.append([project_number, row_top, col_top, adapted_coordinates])
             else:
-                print("residentiel ajouté")
                 resid.append([project_number, row_top, col_top, adapted_coordinates])
     return utils, resid
 
 
-
-def coordinates_adaptation(buildingPlan, rowTop, colTop):
+def _coordinates_adaptation(buildingPlan, rowTop, colTop):
     list_coordinates = []
     indexRow = 0
     for line in buildingPlan:
@@ -114,12 +130,8 @@ def coordinates_adaptation(buildingPlan, rowTop, colTop):
     for cases in list_coordinates:
         cases[0] += int(rowTop)
         cases[1] += int(colTop)
-    # print(list_coordinates)
 
     return list_coordinates
-
-
-
 
 
 """
@@ -127,7 +139,6 @@ def coordinates_adaptation(buildingPlan, rowTop, colTop):
         Par exemple sur deux batiments sont l'un à coté de l'autre, il est inutile de calculer la distance de Manhattan des deux extrémitées
 
 """
-
 
 # def coordinates_optimisation(list_residence, list_utilitaire):
 # for resid in residential_list:                                                  # Pour chaque résidence
