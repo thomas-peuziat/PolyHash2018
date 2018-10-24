@@ -7,6 +7,7 @@ import random
 from model.CityPlan import CityPlan
 from utils import parser
 from utils import scoring
+import os.path
 
 
 def _random_solver(cityplan: CityPlan, project_list: list, error_max: int):
@@ -34,7 +35,7 @@ def _random_solver(cityplan: CityPlan, project_list: list, error_max: int):
                 error -= 1
                 random_pos = (random.randint(0, row_max - 1), random.randint(0, column_max - 1))
 
-        _print_solver(cityplan, len(replica_list))
+        _print_solver(len(replica_list))
 
         return cityplan, replica_list
 
@@ -42,8 +43,11 @@ def _random_solver(cityplan: CityPlan, project_list: list, error_max: int):
 def random_solver_solution(filename, trials_max, error_max):
     max_score = 0
     trials_count = 0
+    path_out = os.path.join(os.path.curdir, 'data', 'output')
 
     while trials_count < trials_max:
+        if not os.path.exists(path_out):
+            os.makedirs(path_out)
         cityplan, project_list = parser.parse(filename)  # Génère un CityPlan vide et une liste de Project
         cityplan, replica_list = _random_solver(cityplan, project_list, error_max)  # Rempli le CityPlan et renvoi une liste de Replica
         score = scoring.scoring_from_replica_list(replica_list, cityplan, project_list)
@@ -59,12 +63,14 @@ def random_solver_solution(filename, trials_max, error_max):
 
 def _advanced_random_solver(cityplan: CityPlan, project_list: list, error_max: int):
     if error_max >= 0:
+        error = 0
         len_project_list = len(project_list)
         row_max, column_max = cityplan.matrix.shape
         replica_list = []
 
-        print("Advanced random solver for :", cityplan.name_project, "\n -------------")
-        while error_max > 0:
+        print("Advanced random solver for :", cityplan.name_project)
+        print("...")
+        while error < error_max:
             random_idx = random.randint(0, len_project_list - 1)
             random_pos = (random.randint(0, row_max - 1), random.randint(0, column_max - 1))
 
@@ -73,9 +79,12 @@ def _advanced_random_solver(cityplan: CityPlan, project_list: list, error_max: i
                 replica = [random_idx, (random_pos[0], random_pos[1])]
                 replica_list.append(replica)
             else:
-                error_max -= 1
+                error += 1
 
-        _print_solver(cityplan, len(replica_list))
+            if not(error % (error_max/10)) and error_max > 100 and error > 0:
+                print(". ", end='')
+
+        _print_solver(len(replica_list))
 
         return cityplan, replica_list
 
@@ -83,8 +92,11 @@ def _advanced_random_solver(cityplan: CityPlan, project_list: list, error_max: i
 def advanced_random_solver_solution(filename, trials_max, error_max):
     max_score = 0
     trials_count = 0
+    path_out = os.path.join(os.path.curdir, 'data', 'output')
 
     while trials_count < trials_max:
+        if not os.path.exists(path_out):
+            os.makedirs(path_out)
         cityplan, project_list = parser.parse(filename)  # Génère un CityPlan vide et une liste de Project
         cityplan, replica_list = _advanced_random_solver(cityplan, project_list, error_max)  # Rempli le CityPlan et renvoi une liste de Replica
         score = scoring.scoring_from_replica_list(replica_list, cityplan, project_list)
@@ -98,10 +110,8 @@ def advanced_random_solver_solution(filename, trials_max, error_max):
     _print_solution(filename, trials_max, max_score)
 
 
-def _print_solver(cityplan, len_replica_list):
-    print("Replica count :", len_replica_list, '\n -------------')
-    print("You can check the output in polyhash2018/data/output/" + cityplan.name_project + ".out")
-    print(" -------------")
+def _print_solver(len_replica_list):
+    print("\nReplica count :", len_replica_list, '\n -------------')
 
 
 def _print_solution(filename, trials_max, max_score):
