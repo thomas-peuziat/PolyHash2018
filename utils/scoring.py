@@ -54,8 +54,6 @@ def _scoring(utilitaires_list, residential_list, cityplan, project_list):
     print("Number of residential replica :", len_residential_list)
     print("Number of utilities replica :", len(utilitaires_list))
 
-
-
     ## -------------------------------------------------------
     ## -------------- Méthode non optimisées -----------------
     ## -------------------------------------------------------
@@ -85,23 +83,27 @@ def _scoring(utilitaires_list, residential_list, cityplan, project_list):
     ## -------------------------------------------------------
 
     for residence in residential_list:
-        if (tested_residential % 100) == 0 and tested_residential != 0:
-            print(" ------- " + "{0:.2f}".format(tested_residential/len_residential_list*100) + '%')
+        if (tested_residential % 500) == 0 and tested_residential != 0:
+            print(" ------- " + "{0:.2f}".format(tested_residential / len_residential_list * 100) + '%')
             print("Residential tested :", tested_residential, "(of " + str(len_residential_list) + ")")
             print("Partial scoring :", score)
             print("Points per residential :", "{0:.2f}".format(score / tested_residential))
             print("Approximated final score :", "{0:.2f}".format((score / tested_residential) * len_residential_list))
+            print("Approximated waiting time: %i s" % (((time.time() - begin_time) *
+                                                          1 // (tested_residential / len_residential_list)) - (
+                                                                     time.time() - begin_time)))
 
         all_resid = residence[3]
         number_project = residence[0]
         types = []
-        manhattan_residence_area = project_list[int(number_project)].get_manhattan_surface(int(cityplan.dist_manhattan_max), cityplan.matrix, all_resid)
+        manhattan_residence_area = project_list[int(number_project)].get_manhattan_surface(
+            int(cityplan.dist_manhattan_max), cityplan.matrix, all_resid)
 
         for coordinates in manhattan_residence_area:
             if str(cityplan.matrix[coordinates]) != ".":
                 building = project_list[int(cityplan.matrix[coordinates])]
                 if type(building) is Utility.Utility:
-                    if not(building.type in types):
+                    if not (building.type in types):
                         types.append(building.type)
                         score += int(project_list[int(number_project)].capacity)
 
