@@ -43,3 +43,108 @@ class Project:
                 return True
         except IndexError:
             return False
+
+
+    """
+    Fonction permettant de retourner une liste de position représentant la surface couverte par (le batiment + la distance de manhattan)
+    :parameter
+    dist = la distance de manhattan
+    matrix = la matrice du CityPlan
+    list_coordinates_full = les positions remplies par le batiment
+    """
+    def get_manhattan_surface(self, dist, matrix, list_coordinates_full):
+        list_valid_coordinates = []
+        nb_row_matrix, nb_column_matrix = matrix.shape
+
+        for i in range(dist):
+
+            for case in list_coordinates_full:
+                haut=False
+                base=False
+                droite=False
+                gauche=False
+
+                point_haut=None
+                point_droit=None
+
+                #tester vers le haut
+                if 0 <= case[0]-(dist-i) <= nb_row_matrix-1:
+                    if (case[0]-(dist-i), case[1]) not in list_valid_coordinates and (case[0]-(dist-i), case[1]) not in list_coordinates_full:
+                        #matrix[(case[0]-(dist-i), case[1])]='#'
+                        list_valid_coordinates.append((case[0]-(dist-i), case[1]))
+                        point_haut=(case[0]-(dist-i), case[1])
+                        haut=True
+                # elif case[0] - (dist-i) < 0:
+                #     j=i
+                #     cpt_vers_la_droite=0
+                #     while(case[0]-(dist-j)<0):
+                #         cpt_vers_la_droite+=1
+                #         j+=1
+                #     point_haut = (case[0] - (dist - j), case[1])
+
+                # tester vers la droite
+                if 0 <= case[1] + (dist - i) <= nb_column_matrix - 1:
+                        if (case[0], case[1] + (dist - i)) not in list_valid_coordinates and (case[0], case[1] + (dist - i)) not in list_coordinates_full:
+                            #matrix[case[0], case[1] + (dist - i)]='#'
+                            list_valid_coordinates.append((case[0], case[1] + (dist - i)))
+                            point_droit=(case[0], case[1] + (dist - i))
+                            droite=True
+
+                #tester vers le bas
+                #si notre cas ne dépasse pas les limites de la matrice
+                if 0 <= case[0]+(dist-i) <= nb_row_matrix-1:
+                    #si la case n'est pas déjà présente dans notre liste
+                    if (case[0]+(dist-i), case[1]) not in list_valid_coordinates and (case[0]+(dist-i), case[1]) not in list_coordinates_full:
+                        #matrix[(case[0]+(dist-i), case[1])]='#'
+                        list_valid_coordinates.append((case[0]+(dist-i), case[1]))
+                        bas=True
+
+                #tester vers la gauche
+                if 0 <= case[1]-(dist-i) <= nb_column_matrix-1:
+                    if (case[0], case[1]-(dist-i)) not in list_valid_coordinates and (case[0], case[1]-(dist-i)) not in list_coordinates_full:
+                        #matrix[(case[0], case[1]-(dist-i))]='#'
+                        list_valid_coordinates.append((case[0], case[1]-(dist-i)))
+                        gauche=True
+
+
+                # print("\n",case,'\n', matrix,list_valid_coordinates,"\n")
+                #
+                # if haut and droite:
+                #     #diagonale haut droite
+                #     #print(point_haut,'\n',point_droit,'\n')
+                #     self._diagonale_haut_droit(point_haut,point_droit,list_valid_coordinates, matrix, cpt_vers_la_droite)
+
+                # if droite and bas:
+                #     #diagonale bas droite
+                #
+                # if bas and gauche:
+                #     #diagonale bas gauche
+                #
+                # if haut and gauche:
+                #     #diagonale haut gauche
+
+
+        return list_valid_coordinates
+
+
+    def _diagonale_haut_droit(self, point_A, point_B, list_valid_coordinates, matrix, cpt_vers_la_droite=0):
+        nb_row_matrix, nb_column_matrix = matrix.shape
+        point_tmp = point_A
+
+        while point_A[0] != point_B[0] and point_A[1] != point_B[1]:
+
+            if 0 <= point_A[0] <= nb_row_matrix - 1 and 0 <= point_A[1] <= nb_column_matrix - 1:
+                if matrix[point_A[0], point_A[1]] == '.':
+                    if (point_A[0], point_A[1]) not in list_valid_coordinates:
+                        matrix[point_A[0], point_A[1]] = '#'
+            point_A = (point_A[0]+1, point_A[1]+1)
+
+        if(cpt_vers_la_droite!=0):
+            for nb in range(cpt_vers_la_droite+1):
+                matrix[0, point_tmp[1]+nb]='#'
+
+            while point_tmp[0] != point_B[0] and point_tmp[1] != point_B[1]:
+                point_tmp = (point_tmp[0]+1, point_tmp[1]+1)
+                #faire un décalage de cpt vers la droite tant que matrix[0,tmp[1] != pointB ??
+    #TODO si une surface dépasse de la matrice, on perd des diagonales -- y remédier
+        return ""

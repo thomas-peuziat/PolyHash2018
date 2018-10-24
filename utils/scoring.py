@@ -7,7 +7,7 @@
 #
 #
 #
-# Ce scoring va permettre d'analyser le fichier d'une entrée formatée afin d'endéduire
+# Ce scoring va permettre d'analyser le fichier d'une entrée formatée afin d'en déduire
 # le score de notre implémentation du Google HashCode 2018
 
 
@@ -17,10 +17,11 @@ from model import CityPlan
 from model import Residential
 from model import Utility
 import os.path
+import time
 
 
 def scoring_from_replica_list(replica_list, cityplan, project_list):
-    utilitaires_list = []
+    utility_list = []
     residential_list = []
     for replica in replica_list:
         project_number = replica[0]  # get the number of the building project
@@ -32,10 +33,10 @@ def scoring_from_replica_list(replica_list, cityplan, project_list):
         adapted_coordinates = _coordinates_adaptation(plan, row_top, col_top)
 
         if type(project_list[int(project_number)]) is Utility.Utility:  # Batiments utilitaire
-            utilitaires_list.append([project_number, row_top, col_top, adapted_coordinates])
+            utility_list.append([project_number, row_top, col_top, adapted_coordinates])
         else:
             residential_list.append([project_number, row_top, col_top, adapted_coordinates])
-    return _scoring(utilitaires_list, residential_list, cityplan, project_list)
+    return _scoring(utility_list, residential_list, cityplan, project_list)
 
 
 def scoring_from_output(filename, cityplan, project_list):
@@ -44,6 +45,7 @@ def scoring_from_output(filename, cityplan, project_list):
 
 
 def _scoring(utilitaires_list, residential_list, cityplan, project_list):
+    begin_time = time.time()
     tested_residential = 0
     score = 0
     len_residential_list = len(residential_list)
@@ -51,6 +53,36 @@ def _scoring(utilitaires_list, residential_list, cityplan, project_list):
     print("...Scoring starting...")
     print("Number of residential replica :", len_residential_list)
     print("Number of utilities replica :", len(utilitaires_list))
+
+
+
+    ## -------------------------------------------------------
+    ## -------------- Méthode non optimisées -----------------
+    ## -------------------------------------------------------
+    # for residence in residential_list:
+    #     if (tested_residential % 100) == 0 and tested_residential != 0:
+    #         print(" ------- " + "{0:.2f}".format(tested_residential/len_residential_list*100) + '%')
+    #         print("Residential tested :", tested_residential, "(of " + str(len_residential_list) + ")")
+    #         print("Partial scoring :", score)
+    #         print("Points per residential :", "{0:.2f}".format(score / tested_residential))
+    #         print("Approximated final score :", "{0:.2f}".format((score / tested_residential) * len_residential_list))
+    #
+    #     all_resid = residence[3]
+    #     number_project = residence[0]
+    #     types = []
+    #     for utilitaires in utilitaires_list:
+    #         all_utils = utilitaires[3]
+    #         util_project = utilitaires[0]
+    #         distance = _distance_manhattan(all_resid, all_utils)
+    #         if distance <= int(cityplan.dist_manhattan_max):
+    #             if not (project_list[int(util_project)].type in types):
+    #                 score += int(project_list[int(number_project)].capacity)
+    #                 types.append(project_list[int(util_project)].type)
+    #     tested_residential += 1
+
+    ## -------------------------------------------------------
+    ## ---------------- Méthode optimisées -------------------
+    ## -------------------------------------------------------
 
     for residence in residential_list:
         if (tested_residential % 100) == 0 and tested_residential != 0:
@@ -63,18 +95,21 @@ def _scoring(utilitaires_list, residential_list, cityplan, project_list):
         all_resid = residence[3]
         number_project = residence[0]
         types = []
-        for utilitaires in utilitaires_list:
-            all_utils = utilitaires[3]
-            util_project = utilitaires[0]
-            distance = _distance_manhattan(all_resid, all_utils)
-            if distance <= int(cityplan.dist_manhattan_max):
-                if not (project_list[int(util_project)].type in types):
-                    score += int(project_list[int(number_project)].capacity)
-                    types.append(project_list[int(util_project)].type)
+        manhattan_residence_area = project_list[int(number_project)].get_manhattan_surface(int(cityplan.dist_manhattan_max), cityplan.matrix, all_resid)
+
+        for coordinates in manhattan_residence_area:
+            if str(cityplan.matrix[coordinates]) != ".":
+                building = project_list[int(cityplan.matrix[coordinates])]
+                if type(building) is Utility.Utility:
+                    if not(building.type in types):
+                        types.append(building.type)
+                        score += int(project_list[int(number_project)].capacity)
+
         tested_residential += 1
 
     print(" =-=-=-=-=-= =-=-=-=-=-=")
     print("Final score :", score)
+    print("--- %s seconds ---" % (time.time() - begin_time))
     print(" =-=-=-=-=-= =-=-=-=-=-=")
     return score
 
