@@ -57,94 +57,191 @@ class Project:
         nb_row_matrix, nb_column_matrix = matrix.shape
 
         for i in range(dist):
-
             for case in list_coordinates_full:
-                haut=False
-                base=False
-                droite=False
-                gauche=False
+                haut = False
+                bas = False
+                droite = False
+                gauche = False
 
-                point_haut=None
-                point_droit=None
+                point_haut = None
+                point_droit = None
+                point_bas = None
+                point_gauche = None
+
+                cpt_decalage_haut = 0
+                cpt_decalage_droite = 0
+                cpt_decalage_bas = 0
+                cpt_decalage_gauche = 0
 
                 #tester vers le haut
                 if 0 <= case[0]-(dist-i) <= nb_row_matrix-1:
-                    if (case[0]-(dist-i), case[1]) not in list_valid_coordinates and (case[0]-(dist-i), case[1]) not in list_coordinates_full:
-                        #matrix[(case[0]-(dist-i), case[1])]='#'
+                    if (case[0]-(dist-i), case[1]) not in list_coordinates_full:
+                        matrix[(case[0]-(dist-i), case[1])]='#'
                         list_valid_coordinates.append((case[0]-(dist-i), case[1]))
                         point_haut=(case[0]-(dist-i), case[1])
                         haut=True
-                # elif case[0] - (dist-i) < 0:
-                #     j=i
-                #     cpt_vers_la_droite=0
-                #     while(case[0]-(dist-j)<0):
-                #         cpt_vers_la_droite+=1
-                #         j+=1
-                #     point_haut = (case[0] - (dist - j), case[1])
+                elif case[0] - (dist-i) < 0:
+                    j=i
+                    while case[0]-(dist-j) < 0:
+                        cpt_decalage_haut+=1
+                        j+=1
+                    haut=True
+                    point_haut = (case[0] - (dist - j), case[1])
 
                 # tester vers la droite
                 if 0 <= case[1] + (dist - i) <= nb_column_matrix - 1:
-                        if (case[0], case[1] + (dist - i)) not in list_valid_coordinates and (case[0], case[1] + (dist - i)) not in list_coordinates_full:
-                            #matrix[case[0], case[1] + (dist - i)]='#'
+                        if (case[0], case[1] + (dist - i)) not in list_coordinates_full:
+                            matrix[case[0], case[1] + (dist - i)]='#'
                             list_valid_coordinates.append((case[0], case[1] + (dist - i)))
                             point_droit=(case[0], case[1] + (dist - i))
                             droite=True
+                elif case[1] + (dist - i) > nb_column_matrix -1:
+                    j=i
+                    while case[1] + (dist - j) > nb_column_matrix-1:
+                        cpt_decalage_droite+=1
+                        j+=1
+                    droite = True
+                    point_droit = (case[0], case[1] + (dist - j))
 
                 #tester vers le bas
                 #si notre cas ne dépasse pas les limites de la matrice
                 if 0 <= case[0]+(dist-i) <= nb_row_matrix-1:
                     #si la case n'est pas déjà présente dans notre liste
-                    if (case[0]+(dist-i), case[1]) not in list_valid_coordinates and (case[0]+(dist-i), case[1]) not in list_coordinates_full:
-                        #matrix[(case[0]+(dist-i), case[1])]='#'
+                    if (case[0]+(dist-i), case[1]) not in list_coordinates_full:
+                        matrix[(case[0]+(dist-i), case[1])]='#'
                         list_valid_coordinates.append((case[0]+(dist-i), case[1]))
+                        point_bas = (case[0]+(dist-i), case[1])
                         bas=True
+                elif case[0] + (dist - i) > nb_row_matrix-1:
+                    j=i
+                    while case[0] + (dist - j) > nb_row_matrix -1:
+                        cpt_decalage_bas+=1
+                        j+=1
+                    bas = True
+                    point_bas = (case[0] + (dist - j), case[1])
 
                 #tester vers la gauche
                 if 0 <= case[1]-(dist-i) <= nb_column_matrix-1:
-                    if (case[0], case[1]-(dist-i)) not in list_valid_coordinates and (case[0], case[1]-(dist-i)) not in list_coordinates_full:
-                        #matrix[(case[0], case[1]-(dist-i))]='#'
+                    if (case[0], case[1]-(dist-i)) not in list_coordinates_full:
+                        matrix[(case[0], case[1]-(dist-i))]='#'
                         list_valid_coordinates.append((case[0], case[1]-(dist-i)))
+                        point_gauche = (case[0], case[1]-(dist-i))
                         gauche=True
+                elif case[1] - (dist - i) < 0:
+                    j=i
+                    while case[1] - (dist - j) < 0:
+                        cpt_decalage_gauche+=1
+                        j+=1
+                    gauche = True
+                    point_gauche = (case[0], case[1] - (dist-j))
 
 
-                # print("\n",case,'\n', matrix,list_valid_coordinates,"\n")
-                #
-                # if haut and droite:
-                #     #diagonale haut droite
-                #     #print(point_haut,'\n',point_droit,'\n')
-                #     self._diagonale_haut_droit(point_haut,point_droit,list_valid_coordinates, matrix, cpt_vers_la_droite)
-
-                # if droite and bas:
-                #     #diagonale bas droite
-                #
-                # if bas and gauche:
-                #     #diagonale bas gauche
-                #
-                # if haut and gauche:
-                #     #diagonale haut gauche
-
+                if haut and droite:
+                    #diagonale haut droite
+                    self._diagonale_haut_droit(point_haut,point_droit,list_valid_coordinates, list_coordinates_full, matrix, cpt_decalage_haut, cpt_decalage_droite)
+                if droite and bas:
+                    #diagonale bas droite
+                    self._diagonale_droit_bas(point_droit, point_bas, list_valid_coordinates, list_coordinates_full, matrix, cpt_decalage_droite, cpt_decalage_bas)
+                if bas and gauche:
+                    #diagonale bas gauche
+                    self._diagonale_bas_gauche(point_bas, point_gauche, list_valid_coordinates, list_coordinates_full, matrix, cpt_decalage_bas, cpt_decalage_gauche)
+                if gauche and haut:
+                    #diagonale haut gauche
+                    self._diagonale_gauche_haut(point_gauche, point_haut, list_valid_coordinates, list_coordinates_full, matrix, cpt_decalage_gauche, cpt_decalage_haut)
 
         return list_valid_coordinates
 
 
-    def _diagonale_haut_droit(self, point_A, point_B, list_valid_coordinates, matrix, cpt_vers_la_droite=0):
+    def _diagonale_haut_droit(self, point_A, point_B, list_valid_coordinates, list_coordinates_full, matrix, cpt_decalage_haut=0, cpt_decalage_droite=0):
         nb_row_matrix, nb_column_matrix = matrix.shape
-        point_tmp = point_A
+
+        if(cpt_decalage_haut!=0):
+            if 0 <= point_A[0] <= nb_row_matrix - 1 and 0 <= point_A[1]+cpt_decalage_haut <= nb_column_matrix - 1:
+                if (point_A[0], point_A[1]+cpt_decalage_haut) not in list_coordinates_full:
+                    point_A =(point_A[0], point_A[1]+cpt_decalage_haut)
+                    matrix[point_A[0], point_A[1]]='#'
+                    list_valid_coordinates.append((point_A[0], point_A[1]))
+
+        if(cpt_decalage_droite!=0):
+            if 0 <= point_B[0]-cpt_decalage_droite <= nb_row_matrix - 1 and 0 <= point_B[1] <= nb_column_matrix - 1:
+                if (point_B[0]-cpt_decalage_droite, point_B[1]) not in list_coordinates_full:
+                    point_B = (point_B[0]-cpt_decalage_droite, point_B[1])
+                    matrix[point_B[0],point_B[1]]='#'
+                    list_valid_coordinates.append((point_B[0], point_B[1]))
 
         while point_A[0] != point_B[0] and point_A[1] != point_B[1]:
-
             if 0 <= point_A[0] <= nb_row_matrix - 1 and 0 <= point_A[1] <= nb_column_matrix - 1:
-                if matrix[point_A[0], point_A[1]] == '.':
-                    if (point_A[0], point_A[1]) not in list_valid_coordinates:
-                        matrix[point_A[0], point_A[1]] = '#'
-            point_A = (point_A[0]+1, point_A[1]+1)
+                if (point_A[0], point_A[1]) not in list_coordinates_full:
+                    matrix[point_A[0], point_A[1]] = '#'
+            point_A = (point_A[0] + 1, point_A[1] + 1)
 
-        if(cpt_vers_la_droite!=0):
-            for nb in range(cpt_vers_la_droite+1):
-                matrix[0, point_tmp[1]+nb]='#'
 
-            while point_tmp[0] != point_B[0] and point_tmp[1] != point_B[1]:
-                point_tmp = (point_tmp[0]+1, point_tmp[1]+1)
-                #faire un décalage de cpt vers la droite tant que matrix[0,tmp[1] != pointB ??
-    #TODO si une surface dépasse de la matrice, on perd des diagonales -- y remédier
-        return ""
+
+    def _diagonale_droit_bas(self, point_A, point_B, list_valid_coordinates, list_coordinates_full, matrix, cpt_decalage_droit=0, cpt_decalage_bas=0):
+        nb_row_matrix, nb_column_matrix = matrix.shape
+
+        if (cpt_decalage_droit != 0):
+            if 0 <= point_A[0]+cpt_decalage_droit <= nb_row_matrix - 1 and 0 <= point_A[1] <= nb_column_matrix - 1:
+                if (point_A[0]+cpt_decalage_droit, point_A[1]) not in list_coordinates_full:
+                    point_A = (point_A[0]+cpt_decalage_droit, point_A[1])
+                    matrix[point_A[0], point_A[1]] = '#'
+                    list_valid_coordinates.append((point_A[0], point_A[1]))
+
+        if (cpt_decalage_bas != 0):
+            if 0 <= point_B[0] <= nb_row_matrix - 1 and 0 <= point_B[1]+cpt_decalage_bas <= nb_column_matrix - 1:
+                if (point_B[0], point_B[1]+cpt_decalage_bas) not in list_coordinates_full:
+                    point_B = (point_B[0], point_B[1]+cpt_decalage_bas)
+                    matrix[point_B[0], point_B[1]] = '#'
+                    list_valid_coordinates.append((point_B[0], point_B[1]))
+
+        while point_A[0] != point_B[0] and point_A[1] != point_B[1]:
+            if 0 <= point_A[0] <= nb_row_matrix - 1 and 0 <= point_A[1] <= nb_column_matrix - 1:
+                if (point_A[0], point_A[1]) not in list_coordinates_full:
+                    matrix[point_A[0], point_A[1]] = '#'
+            point_A = (point_A[0] + 1, point_A[1] - 1)
+
+    def _diagonale_bas_gauche(self, point_A, point_B, list_valid_coordinates, list_coordinates_full, matrix, cpt_decalage_bas=0, cpt_decalage_gauche=0):
+        nb_row_matrix, nb_column_matrix = matrix.shape
+
+        if (cpt_decalage_bas != 0):
+            if 0 <= point_A[0] <= nb_row_matrix - 1 and 0 <= point_A[1]-cpt_decalage_bas <= nb_column_matrix - 1:
+                if (point_A[0], point_A[1]-cpt_decalage_bas) not in list_coordinates_full:
+                    point_A = (point_A[0], point_A[1]-cpt_decalage_bas)
+                    matrix[point_A[0], point_A[1]] = '#'
+                    list_valid_coordinates.append((point_A[0], point_A[1]))
+
+        if (cpt_decalage_gauche != 0):
+            if 0 <= point_B[0]+cpt_decalage_gauche <= nb_row_matrix - 1 and 0 <= point_B[1] <= nb_column_matrix - 1:
+                if (point_B[0]+cpt_decalage_gauche, point_B[1]) not in list_coordinates_full:
+                    point_B = (point_B[0]+cpt_decalage_gauche, point_B[1])
+                    matrix[point_B[0], point_B[1]] = '#'
+                    list_valid_coordinates.append((point_B[0], point_B[1]))
+
+        while point_A[0] != point_B[0] and point_A[1] != point_B[1]:
+            if 0 <= point_A[0] <= nb_row_matrix - 1 and 0 <= point_A[1] <= nb_column_matrix - 1:
+                if (point_A[0], point_A[1]) not in list_coordinates_full:
+                    matrix[point_A[0], point_A[1]] = '#'
+            point_A = (point_A[0] - 1, point_A[1] - 1)
+
+    def _diagonale_gauche_haut(self, point_A, point_B, list_valid_coordinates, list_coordinates_full, matrix, cpt_decalage_gauche=0, cpt_decalage_haut=0):
+        nb_row_matrix, nb_column_matrix = matrix.shape
+
+        if(cpt_decalage_gauche!=0):
+            if 0 <= point_A[0]-cpt_decalage_gauche <= nb_row_matrix - 1 and 0 <= point_A[1] <= nb_column_matrix - 1:
+                if (point_A[0]-cpt_decalage_gauche, point_A[1]) not in list_coordinates_full:
+                    point_A =(point_A[0]-cpt_decalage_gauche, point_A[1])
+                    matrix[point_A[0], point_A[1]]='#'
+                    list_valid_coordinates.append((point_A[0], point_A[1]))
+
+        if(cpt_decalage_haut!=0):
+            if 0 <= point_B[0] <= nb_row_matrix - 1 and 0 <= point_B[1]-cpt_decalage_haut <= nb_column_matrix - 1:
+                if (point_B[0], point_B[1]-cpt_decalage_haut) not in list_coordinates_full:
+                    point_B = (point_B[0], point_B[1]-cpt_decalage_haut)
+                    matrix[point_B[0],point_B[1]]='#'
+                    list_valid_coordinates.append((point_B[0], point_B[1]))
+
+        while point_A[0] != point_B[0] and point_A[1] != point_B[1]:
+            if 0 <= point_A[0] <= nb_row_matrix - 1 and 0 <= point_A[1] <= nb_column_matrix - 1:
+                if (point_A[0], point_A[1]) not in list_coordinates_full:
+                    matrix[point_A[0], point_A[1]] = '#'
+            point_A = (point_A[0] - 1, point_A[1] + 1)
