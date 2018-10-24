@@ -76,7 +76,7 @@ class Project:
                 #tester vers le haut
                 if 0 <= case[0]-(dist-i) <= nb_row_matrix-1:
                     if (case[0]-(dist-i), case[1]) not in list_coordinates_full:
-                        matrix[(case[0]-(dist-i), case[1])]='#'
+                        #matrix[(case[0]-(dist-i), case[1])]='#'
                         list_valid_coordinates.append((case[0]-(dist-i), case[1]))
                         point_haut=(case[0]-(dist-i), case[1])
                         haut=True
@@ -91,7 +91,7 @@ class Project:
                 # tester vers la droite
                 if 0 <= case[1] + (dist - i) <= nb_column_matrix - 1:
                         if (case[0], case[1] + (dist - i)) not in list_coordinates_full:
-                            matrix[case[0], case[1] + (dist - i)]='#'
+                            #matrix[case[0], case[1] + (dist - i)]='#'
                             list_valid_coordinates.append((case[0], case[1] + (dist - i)))
                             point_droit=(case[0], case[1] + (dist - i))
                             droite=True
@@ -108,7 +108,7 @@ class Project:
                 if 0 <= case[0]+(dist-i) <= nb_row_matrix-1:
                     #si la case n'est pas déjà présente dans notre liste
                     if (case[0]+(dist-i), case[1]) not in list_coordinates_full:
-                        matrix[(case[0]+(dist-i), case[1])]='#'
+                        #matrix[(case[0]+(dist-i), case[1])]='#'
                         list_valid_coordinates.append((case[0]+(dist-i), case[1]))
                         point_bas = (case[0]+(dist-i), case[1])
                         bas=True
@@ -123,7 +123,7 @@ class Project:
                 #tester vers la gauche
                 if 0 <= case[1]-(dist-i) <= nb_column_matrix-1:
                     if (case[0], case[1]-(dist-i)) not in list_coordinates_full:
-                        matrix[(case[0], case[1]-(dist-i))]='#'
+                        #matrix[(case[0], case[1]-(dist-i))]='#'
                         list_valid_coordinates.append((case[0], case[1]-(dist-i)))
                         point_gauche = (case[0], case[1]-(dist-i))
                         gauche=True
@@ -149,6 +149,7 @@ class Project:
                     #diagonale haut gauche
                     self._diagonale_gauche_haut(point_gauche, point_haut, list_valid_coordinates, list_coordinates_full, matrix, cpt_decalage_gauche, cpt_decalage_haut)
 
+        list_valid_coordinates = set(list_valid_coordinates)
         return list_valid_coordinates
 
 
@@ -159,20 +160,21 @@ class Project:
             if 0 <= point_A[0] <= nb_row_matrix - 1 and 0 <= point_A[1]+cpt_decalage_haut <= nb_column_matrix - 1:
                 if (point_A[0], point_A[1]+cpt_decalage_haut) not in list_coordinates_full:
                     point_A =(point_A[0], point_A[1]+cpt_decalage_haut)
-                    matrix[point_A[0], point_A[1]]='#'
+                    #matrix[point_A[0], point_A[1]]='#'
                     list_valid_coordinates.append((point_A[0], point_A[1]))
 
         if(cpt_decalage_droite!=0):
             if 0 <= point_B[0]-cpt_decalage_droite <= nb_row_matrix - 1 and 0 <= point_B[1] <= nb_column_matrix - 1:
                 if (point_B[0]-cpt_decalage_droite, point_B[1]) not in list_coordinates_full:
                     point_B = (point_B[0]-cpt_decalage_droite, point_B[1])
-                    matrix[point_B[0],point_B[1]]='#'
+                    #matrix[point_B[0],point_B[1]]='#'
                     list_valid_coordinates.append((point_B[0], point_B[1]))
 
         while point_A[0] != point_B[0] and point_A[1] != point_B[1]:
             if 0 <= point_A[0] <= nb_row_matrix - 1 and 0 <= point_A[1] <= nb_column_matrix - 1:
                 if (point_A[0], point_A[1]) not in list_coordinates_full:
-                    matrix[point_A[0], point_A[1]] = '#'
+                    #matrix[point_A[0], point_A[1]] = '#'
+                    list_valid_coordinates.append((point_A[0], point_A[1]))
             point_A = (point_A[0] + 1, point_A[1] + 1)
 
 
@@ -184,20 +186,21 @@ class Project:
             if 0 <= point_A[0]+cpt_decalage_droit <= nb_row_matrix - 1 and 0 <= point_A[1] <= nb_column_matrix - 1:
                 if (point_A[0]+cpt_decalage_droit, point_A[1]) not in list_coordinates_full:
                     point_A = (point_A[0]+cpt_decalage_droit, point_A[1])
-                    matrix[point_A[0], point_A[1]] = '#'
+                    #matrix[point_A[0], point_A[1]] = '#'
                     list_valid_coordinates.append((point_A[0], point_A[1]))
 
         if (cpt_decalage_bas != 0):
             if 0 <= point_B[0] <= nb_row_matrix - 1 and 0 <= point_B[1]+cpt_decalage_bas <= nb_column_matrix - 1:
                 if (point_B[0], point_B[1]+cpt_decalage_bas) not in list_coordinates_full:
                     point_B = (point_B[0], point_B[1]+cpt_decalage_bas)
-                    matrix[point_B[0], point_B[1]] = '#'
+                    #matrix[point_B[0], point_B[1]] = '#'
                     list_valid_coordinates.append((point_B[0], point_B[1]))
 
         while point_A[0] != point_B[0] and point_A[1] != point_B[1]:
             if 0 <= point_A[0] <= nb_row_matrix - 1 and 0 <= point_A[1] <= nb_column_matrix - 1:
                 if (point_A[0], point_A[1]) not in list_coordinates_full:
-                    matrix[point_A[0], point_A[1]] = '#'
+                    #matrix[point_A[0], point_A[1]] = '#'
+                    list_valid_coordinates.append((point_A[0],point_A[1]))
             point_A = (point_A[0] + 1, point_A[1] - 1)
 
     def _diagonale_bas_gauche(self, point_A, point_B, list_valid_coordinates, list_coordinates_full, matrix, cpt_decalage_bas=0, cpt_decalage_gauche=0):
@@ -207,20 +210,21 @@ class Project:
             if 0 <= point_A[0] <= nb_row_matrix - 1 and 0 <= point_A[1]-cpt_decalage_bas <= nb_column_matrix - 1:
                 if (point_A[0], point_A[1]-cpt_decalage_bas) not in list_coordinates_full:
                     point_A = (point_A[0], point_A[1]-cpt_decalage_bas)
-                    matrix[point_A[0], point_A[1]] = '#'
+                    #matrix[point_A[0], point_A[1]] = '#'
                     list_valid_coordinates.append((point_A[0], point_A[1]))
 
         if (cpt_decalage_gauche != 0):
             if 0 <= point_B[0]+cpt_decalage_gauche <= nb_row_matrix - 1 and 0 <= point_B[1] <= nb_column_matrix - 1:
                 if (point_B[0]+cpt_decalage_gauche, point_B[1]) not in list_coordinates_full:
                     point_B = (point_B[0]+cpt_decalage_gauche, point_B[1])
-                    matrix[point_B[0], point_B[1]] = '#'
+                    #matrix[point_B[0], point_B[1]] = '#'
                     list_valid_coordinates.append((point_B[0], point_B[1]))
 
         while point_A[0] != point_B[0] and point_A[1] != point_B[1]:
             if 0 <= point_A[0] <= nb_row_matrix - 1 and 0 <= point_A[1] <= nb_column_matrix - 1:
                 if (point_A[0], point_A[1]) not in list_coordinates_full:
-                    matrix[point_A[0], point_A[1]] = '#'
+                    #matrix[point_A[0], point_A[1]] = '#'
+                    list_valid_coordinates.append((point_A[0],point_A[1]))
             point_A = (point_A[0] - 1, point_A[1] - 1)
 
     def _diagonale_gauche_haut(self, point_A, point_B, list_valid_coordinates, list_coordinates_full, matrix, cpt_decalage_gauche=0, cpt_decalage_haut=0):
@@ -230,18 +234,19 @@ class Project:
             if 0 <= point_A[0]-cpt_decalage_gauche <= nb_row_matrix - 1 and 0 <= point_A[1] <= nb_column_matrix - 1:
                 if (point_A[0]-cpt_decalage_gauche, point_A[1]) not in list_coordinates_full:
                     point_A =(point_A[0]-cpt_decalage_gauche, point_A[1])
-                    matrix[point_A[0], point_A[1]]='#'
+                    #matrix[point_A[0], point_A[1]]='#'
                     list_valid_coordinates.append((point_A[0], point_A[1]))
 
         if(cpt_decalage_haut!=0):
             if 0 <= point_B[0] <= nb_row_matrix - 1 and 0 <= point_B[1]-cpt_decalage_haut <= nb_column_matrix - 1:
                 if (point_B[0], point_B[1]-cpt_decalage_haut) not in list_coordinates_full:
                     point_B = (point_B[0], point_B[1]-cpt_decalage_haut)
-                    matrix[point_B[0],point_B[1]]='#'
+                    #matrix[point_B[0],point_B[1]]='#'
                     list_valid_coordinates.append((point_B[0], point_B[1]))
 
         while point_A[0] != point_B[0] and point_A[1] != point_B[1]:
             if 0 <= point_A[0] <= nb_row_matrix - 1 and 0 <= point_A[1] <= nb_column_matrix - 1:
                 if (point_A[0], point_A[1]) not in list_coordinates_full:
-                    matrix[point_A[0], point_A[1]] = '#'
+                    #matrix[point_A[0], point_A[1]] = '#'
+                    list_valid_coordinates.append((point_A[0],point_A[1]))
             point_A = (point_A[0] - 1, point_A[1] + 1)
