@@ -36,7 +36,7 @@ def scoring_from_replica_list(replica_list, cityplan, project_list):
             utility_list.append([project_number, row_top, col_top, adapted_coordinates])
         else:
             residential_list.append([project_number, row_top, col_top, adapted_coordinates])
-    return _scoring(utility_list, residential_list, cityplan, project_list)
+    return _scoring(utility_list, residential_list, cityplan, project_list, replica_list)
 
 
 def scoring_from_output(filename, cityplan, project_list):
@@ -44,7 +44,7 @@ def scoring_from_output(filename, cityplan, project_list):
     return _scoring(utilitaires_list, residential_list, cityplan, project_list)
 
 
-def _scoring(utilitaires_list, residential_list, cityplan, project_list):
+def _scoring(utilitaires_list, residential_list, cityplan, project_list, replica_list=None):
     begin_time = time.time()
     tested_residential = 0
     score = 0
@@ -101,7 +101,7 @@ def _scoring(utilitaires_list, residential_list, cityplan, project_list):
 
         for coordinates in manhattan_residence_area:
             if str(cityplan.matrix[coordinates]) != ".":
-                building = project_list[int(cityplan.matrix[coordinates])]
+                building = project_list[int(replica_list[int(cityplan.matrix[coordinates])][0])]
                 if type(building) is Utility.Utility:
                     if not (building.type in types):
                         types.append(building.type)
@@ -369,3 +369,22 @@ def _coordinates_adaptation(buildingPlan, rowTop, colTop):
 ##TODO: Optimisation périmètre de recherche
 
 ##TODO: Optimisaion des cases sur lesquelles calculer la distance
+
+
+# def building_score(cityplan, row, col, project_list, project_number):
+#     plan = project_list[int(project_number)].matrix
+#     adapted_coordinates = _coordinates_adaptation(plan, row, col)
+#     score = 0
+#     types = []
+#     manhattan_residence_area = project_list[int(project_number)].get_manhattan_surface(
+#         int(cityplan.dist_manhattan_max), cityplan.matrix, adapted_coordinates)
+#
+#     for coordinates in manhattan_residence_area:
+#         if str(cityplan.matrix[coordinates]) != ".":
+#             building = project_list[int(cityplan.matrix[coordinates])]
+#             if type(building) is Utility.Utility:
+#                 if not (building.type in types):
+#                     types.append(building.type)
+#                     score += int(project_list[int(project_number)].capacity)
+#
+#     return score
