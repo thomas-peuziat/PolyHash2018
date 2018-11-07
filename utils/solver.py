@@ -106,7 +106,7 @@ def advanced_random_solver_solution(filename, trials_max, error_max):
 
         if score >= max_score:
             max_score = score
-            parser.imgify(filename, cityplan, project_list)
+            parser.imgify(filename, cityplan, project_list, replica_list)
             parser.textify(replica_list, filename)
 
     _print_solution(filename, trials_max, max_score)

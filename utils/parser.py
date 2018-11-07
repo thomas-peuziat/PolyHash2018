@@ -98,12 +98,12 @@ def textify(replica_list, filename):
                               str(replica_list[replica_idx][1][1]) + '\n')
 
 
-def imgify(filename, cityplan, project_list):
+def imgify(filename, cityplan, project_list, replica_list):
     """
         Créer une image représentant le plan final, situé dans le dossier "[...]/polyhash2018/data/output/", grâce aux données en entrées
 
         :param cityplan: Objet CityPlan
-        :param project_list: Liste des projets
+        :param replica_list: Liste des replica
         :param filename: Nom de sortie du fichier (sans extension)
 
         :Example:
@@ -129,9 +129,9 @@ def imgify(filename, cityplan, project_list):
                 data[idx_row][idx_column] = black
             else:
                 val_element = int(val_element)
-                if type(project_list[val_element]) == Utility:
+                if type(project_list[replica_list[val_element][0]]) == Utility:
                     data[idx_row][idx_column] = green
-                elif type(project_list[val_element]) == Residential:
+                elif type(project_list[replica_list[val_element][0]]) == Residential:
                     data[idx_row][idx_column] = red
 
     img = smp.toimage(data)
