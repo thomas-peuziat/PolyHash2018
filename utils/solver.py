@@ -22,8 +22,7 @@ def _random_solver(cityplan: CityPlan, project_list: list, error_max: int):
 
         print("Random solver for :", cityplan.name_project, "\n -------------")
         while error > 0:
-            id_replica = len(replica_list)-1
-            if cityplan.add(project_list[random_idx], random_pos[0], random_pos[1], id_replica):
+            if cityplan.add(project_list[random_idx], random_pos[0], random_pos[1]):
                 error = error_max
 
                 project_list[random_idx].list_pos_replica.append((random_pos[0], random_pos[1]))
