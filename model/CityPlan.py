@@ -5,7 +5,7 @@ class CityPlan:
         self.name_project = name
         self.dist_manhattan_max = dist
 
-    def add(self, project, row: int, column: int):
+    def add(self, project, row: int, column: int, id_replica):
         if project.is_placeable(self.matrix, row, column):
             project_row, project_column = project.shape
 
@@ -21,7 +21,8 @@ class CityPlan:
                     #si dans la ville, c'est égale à un point et que le project est un # alors on peut le placer
                     #sinon on laisse les points comme avant
                     if self.matrix[num_lignes,num_colonnes] == '.' and project.matrix[idx_project_row,idx_project_column] != '.':
-                        self.matrix[num_lignes, num_colonnes] = project.matrix[idx_project_row, idx_project_column]
+                        self.matrix[num_lignes, num_colonnes] = id_replica
+                        #project.matrix[idx_project_row, idx_project_column]
                     idx_project_column += 1
                 idx_project_row += 1
             return project
