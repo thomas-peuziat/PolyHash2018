@@ -11,6 +11,7 @@ from utils import parser
 from utils import scoring
 import os.path
 import time
+import numpy as np
 
 
 def _random_solver(cityplan: CityPlan, project_list: list, error_max: int):
@@ -129,22 +130,28 @@ def _print_solution(filename, trials_max, max_score):
     print(" ~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~")
 
 
-def elitist_solver_solution(filename, error_max, nb_generation):
+def elitist_solver_solution(filename, error_max, generation_max):
     all_buildings_scores = []
-    all_cityplans = []
+    buildings_with_points = []
 
-    # Génération d'une population aléatoire
-    for i in range(0, nb_generation):
-        cityplan, project_list = parser.parse(filename)  # Génère un CityPlan vide et une liste de Project
+
+    #all_cityplans = []
+    cityplan, project_list = parser.parse(filename)  # Génère un CityPlan vide et une liste de Project
+
+    for generation_number in range(0, generation_max):
+
+        #TODO: Replacer dans la map les meilleurs building
+        taille_matrix = cityplan.matrix.shape
+        cityplan.matrix = np.full(taille_matrix, '.', dtype=np.dtype('U9'))
 
         print("Elitist solver for :", cityplan.name_project)
         print("...")
 
+        # Génération d'une population aléatoire
         cityplan, replica_list = _advanced_random_solver(cityplan, project_list,
                                                                 error_max)  # Rempli le CityPlan et renvoi une liste de Replica
 
-        all_cityplans.append(
-            cityplan)  # Ajout des différents cityplans dans le cas d'une génération avec plusieurs populations
+        # all_cityplans.append(cityplan)  # Ajout des différents cityplans dans le cas d'une génération avec plusieurs populations
 
         begin_time = time.time()
         tested_replica = 0
@@ -154,7 +161,6 @@ def elitist_solver_solution(filename, error_max, nb_generation):
 
         # Lecture des repliques placées dans la map
         for building in replica_list:
-
             project_number = int(building[0])
             if type(project_list[project_number]) is Residential:
                 if (tested_replica % 500) == 0 and tested_replica != 0:
@@ -167,7 +173,7 @@ def elitist_solver_solution(filename, error_max, nb_generation):
                 score_total += building_score
 
                 all_buildings_scores.append(
-                    [building_score, (row, col), project_number, i])  # Ajout des scores de chaque batiments
+                    [building_score, (row, col), project_number])  # Ajout des scores de chaque batiments
 
                 plan = project_list[project_number].matrix
                 resid_adapted_coordinates = scoring._coordinates_adaptation(plan, row, col)
@@ -214,27 +220,31 @@ def elitist_solver_solution(filename, error_max, nb_generation):
                     densite = building_score / taille_reelle
 
                     all_buildings_scores.append(
-                        [densite, (row, col), project_number, i])  # Ajout des scores de chaque batiments
+                        [densite, (row, col), project_number, generation_number])  # Ajout des scores de chaque batiments
             tested_replica += 1
 
         print(" =-=-=-=-=-= =-=-=-=-=-=")
-        print("Total score Generation ", i, " ???????????????? :", score_total)
+        print("Total score Generation ", generation_number, " ???????????????? :", score_total)
         print("--- %s seconds ---" % (time.time() - begin_time))
         print(" =-=-=-=-=-= =-=-=-=-=-=")
 
-
-
         # Triage des scores par ordre décroissant de la densitées
-    all_buildings_scores.sort(reverse=True)
-    buildings_with_points = []
+        all_buildings_scores.sort(reverse=True)
 
-    # Suppression des résidences qui rapportent zéro points
-    for i in range(0, len(all_buildings_scores)):
-        if int(all_buildings_scores[i][0]) != 0:
-            buildings_with_points.append(all_buildings_scores[i])
+        # Suppression des résidences qui rapportent zéro points
+        for idx in range(0, len(all_buildings_scores)):
+            if int(all_buildings_scores[idx][0]) != 0:
+                buildings_with_points.append(all_buildings_scores[idx])
 
+        # Garde les meilleurs generation_number/generation_max
+        # best_building_with_points = []
+        # for idx in range(0, int((generation_number/generation_max)*len(buildings_with_points))):
+        #     best_building_with_points.append(buildings_with_points[idx])
+        #
+        # print("Building with points:", len(buildings_with_points))
+        # print("Best :", len(best_building_with_points))
 
-    print(len(buildings_with_points))
+    #print(len(buildings_with_points))
 
 
     ## Fait : Calcul du score par batiment résidentiel
