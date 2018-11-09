@@ -5,9 +5,13 @@ avec des replica de Project
 
 import random
 from model.CityPlan import CityPlan
+from model.Residential import Residential
+from model.Utility import Utility
 from utils import parser
 from utils import scoring
 import os.path
+import time
+
 
 
 def _random_solver(cityplan: CityPlan, project_list: list, error_max: int):
@@ -69,8 +73,7 @@ def _advanced_random_solver(cityplan: CityPlan, project_list: list, error_max: i
         row_max, column_max = cityplan.matrix.shape
         replica_list = []
 
-        print("Advanced random solver for :", cityplan.name_project)
-        print("...")
+
         while error < error_max:
             random_idx = random.randint(0, len_project_list - 1)
             random_pos = (random.randint(0, row_max - 1), random.randint(0, column_max - 1))
@@ -100,6 +103,10 @@ def advanced_random_solver_solution(filename, trials_max, error_max):
         if not os.path.exists(path_out):
             os.makedirs(path_out)
         cityplan, project_list = parser.parse(filename)  # Génère un CityPlan vide et une liste de Project
+
+        print("Advanced random solver for :", cityplan.name_project)
+        print("...")
+
         cityplan, replica_list = _advanced_random_solver(cityplan, project_list, error_max)  # Rempli le CityPlan et renvoi une liste de Replica
         score = scoring.scoring_from_replica_list(replica_list, cityplan, project_list)
         trials_count += 1
@@ -121,3 +128,107 @@ def _print_solution(filename, trials_max, max_score):
     print("Best score for", filename, "with", trials_max, "trials is :", max_score)
     print("You can find the output in polyhash2018/data/output")
     print(" ~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~")
+
+
+def elitist_solver_solution(filename, error_max, nb_generation):
+    all_buildings_scores = []
+    all_cityplans = []
+
+    # Génération d'une population aléatoire
+    for i in range(0, nb_generation):
+        cityplan, project_list = parser.parse(filename)  # Génère un CityPlan vide et une liste de Project
+
+        print("Elitist solver for :", cityplan.name_project)
+        print("...")
+
+        cityplan, replica_list = _advanced_random_solver(cityplan, project_list,
+                                                                error_max)  # Rempli le CityPlan et renvoi une liste de Replica
+
+        all_cityplans.append(
+            cityplan)  # Ajout des différents cityplans dans le cas d'une génération avec plusieurs populations
+
+        begin_time = time.time()
+        tested_replica = 0
+        len_replica_list = len(replica_list)
+        # score correspond au score total d'une génération
+        score_total = 0
+
+        # Lecture des repliques placées dans la map
+        for building in replica_list:
+            project_number = int(building[0])
+            if type(project_list[project_number]) is Residential:
+                if (tested_replica % 500) == 0 and tested_replica != 0:
+                    scoring._affichage_score(tested_replica, len_replica_list, score_total, begin_time, False)
+
+                row = building[1][0]
+                col = building[1][1]
+                building_score = scoring.building_score(cityplan, row, col, project_list, project_number,
+                                                        replica_list)  # Calcul des scores de chaque batiments
+                score_total += building_score
+
+                all_buildings_scores.append(
+                    [building_score, (row, col), project_number, i])  # Ajout des scores de chaque batiments
+
+                plan = project_list[project_number].matrix
+                adapted_coordinates = scoring._coordinates_adaptation(plan, row, col)
+
+                used_surface = project_list[project_number].get_manhattan_surface(
+                    int(cityplan.dist_manhattan_max), cityplan.matrix,
+                    adapted_coordinates)
+                new_liste = list(used_surface)
+                # new_liste.sort(key=lambda x: (x[0], x[1]))
+                # print(new_liste)
+
+                # Récupération de toutes les cases remplies pour notre configuration
+                id_utility_list = []
+                cases_configuration = []
+                for cases in new_liste:
+                    if str(cityplan.matrix[cases]) != ".":
+                        building = project_list[int(replica_list[project_number][0])]
+                        if type(building) is Utility:
+                            if not (project_number in id_utility_list):
+                                id_utility_list.append(project_number)
+                                building_coordinates = scoring._coordinates_adaptation(building.matrix,
+                                                                                       replica_list[project_number][1][
+                                                                                           0],
+                                                                                       replica_list[project_number][1][
+                                                                                           1])
+                                for coor in building_coordinates:
+                                    cases_configuration.append(coor)
+
+                # Calcul de l'espace utilisée par la configuration
+                if cases_configuration != []:
+                    cases_configuration.sort(key=lambda x: (x[0], x[1]))
+                    row_top = int(cases_configuration[0][0])
+                    row_bottom = int(cases_configuration[len(cases_configuration) - 1][0])
+
+                    cases_configuration.sort(key=lambda x: (x[1], x[0]))
+                    col_top = int(cases_configuration[0][1])
+                    col_bottom = int(cases_configuration[len(cases_configuration) - 1][1])
+
+                    taille = [row_bottom - row_top + 1, col_bottom - col_top + 1]
+                    taille_reelle = taille[0] * taille[1]
+                    densite = building_score / taille_reelle
+
+                    all_buildings_scores.append(
+                        [densite, (row, col), project_number, i])  # Ajout des scores de chaque batiments
+            tested_replica += 1
+
+        print(" =-=-=-=-=-= =-=-=-=-=-=")
+        print("Total score Generation 1 ???????????????? :", score_total)
+        print("--- %s seconds ---" % (time.time() - begin_time))
+        print(" =-=-=-=-=-= =-=-=-=-=-=")
+
+
+
+        # Triage des scores par ordre décroissant de la densitées
+    all_buildings_scores.sort(reverse=True)
+    buildings_with_points = []
+
+    # Suppression des résidences qui rapportent zéro points
+    for i in range(0, len(all_buildings_scores)):
+        if int(all_buildings_scores[i][0]) != 0:
+            buildings_with_points.append(all_buildings_scores[i])
+
+
+    print(all_buildings_scores[0][0])

@@ -10,9 +10,6 @@
 # Ce scoring va permettre d'analyser le fichier d'une entrée formatée afin d'en déduire
 # le score de notre implémentation du Google HashCode 2018
 
-
-from model import CityPlan
-from model import Residential
 from model import Utility
 import os.path
 import time
@@ -54,14 +51,7 @@ def _scoring(utilitaires_list, residential_list, cityplan, project_list, replica
 
     for residence in residential_list:
         if (tested_residential % 500) == 0 and tested_residential != 0:
-            print(" ------- " + "{0:.2f}".format(tested_residential / len_residential_list * 100) + '%')
-            print("Residential tested :", tested_residential, "(of " + str(len_residential_list) + ")")
-            print("Partial scoring :", score)
-            print("Points per residential :", "{0:.2f}".format(score / tested_residential))
-            print("Approximated final score :", "{0:.2f}".format((score / tested_residential) * len_residential_list))
-            print("Approximated waiting time: %i s" % (((time.time() - begin_time) *
-                                                          1 // (tested_residential / len_residential_list)) - (
-                                                                     time.time() - begin_time)))
+            _affichage_score(tested_residential, len_residential_list, score, begin_time)
 
         all_resid = residence[3]
         number_project = residence[0]
@@ -112,7 +102,6 @@ def _output_parser(filename, project_list):
             row_top = line.split()[1]
             col_top = line.split()[2]
 
-            ##TODO: Récupération du plan du building
             plan = project_list[int(project_number)].matrix
             adapted_coordinates = _coordinates_adaptation(plan, row_top, col_top)
 
@@ -147,12 +136,6 @@ def _coordinates_adaptation(buildingPlan, rowTop, colTop):
 
 """
 
-##TODO: Regarder le type des utilitaires pour el calcul du score
-
-##TODO: Optimisation périmètre de recherche
-
-##TODO: Optimisaion des cases sur lesquelles calculer la distance
-
 
 def building_score(cityplan, row, col, project_list, project_number, replica_list):
     plan = project_list[int(project_number)].matrix
@@ -171,3 +154,18 @@ def building_score(cityplan, row, col, project_list, project_number, replica_lis
                     score += int(project_list[int(project_number)].capacity)
 
     return score
+
+
+def _affichage_score(tested_replica, len_list, score, begin_time, is_residential=True):
+    print(" ------- " + "{0:.2f}".format(tested_replica / len_list * 100) + '%')
+    if is_residential:
+        print("Residential tested :", tested_replica, "(of " + str(len_list) + ")")
+        print("Points per residential :", "{0:.2f}".format(score / tested_replica))
+        print("Approximated final score :", "{0:.2f}".format((score / tested_replica) * len_list))
+        print("Approximated waiting time: %i s" % (((time.time() - begin_time) *
+                                                    1 // (tested_replica / len_list)) - (
+                                                           time.time() - begin_time)))
+        print("Partial scoring :", score)
+
+    else:
+        print("Replica tested :", tested_replica, "(of " + str(len_list) + ")")
