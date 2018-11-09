@@ -155,6 +155,7 @@ def elitist_solver_solution(filename, error_max, nb_generation):
 
         # Lecture des repliques placées dans la map
         for building in replica_list:
+
             project_number = int(building[0])
             if type(project_list[project_number]) is Residential:
                 if (tested_replica % 500) == 0 and tested_replica != 0:
@@ -170,29 +171,32 @@ def elitist_solver_solution(filename, error_max, nb_generation):
                     [building_score, (row, col), project_number, i])  # Ajout des scores de chaque batiments
 
                 plan = project_list[project_number].matrix
-                adapted_coordinates = scoring._coordinates_adaptation(plan, row, col)
+                resid_adapted_coordinates = scoring._coordinates_adaptation(plan, row, col)
 
                 used_surface = project_list[project_number].get_manhattan_surface(
                     int(cityplan.dist_manhattan_max), cityplan.matrix,
-                    adapted_coordinates)
-                new_liste = list(used_surface)
-                # new_liste.sort(key=lambda x: (x[0], x[1]))
-                # print(new_liste)
+                    resid_adapted_coordinates)
+
+                list_used_surface = list(used_surface)
 
                 # Récupération de toutes les cases remplies pour notre configuration
                 id_utility_list = []
                 cases_configuration = []
-                for cases in new_liste:
+                for cases in list_used_surface:
                     if str(cityplan.matrix[cases]) != ".":
-                        building = project_list[int(replica_list[project_number][0])]
-                        if type(building) is Utility:
-                            if not (project_number in id_utility_list):
-                                id_utility_list.append(project_number)
-                                building_coordinates = scoring._coordinates_adaptation(building.matrix,
-                                                                                       replica_list[project_number][1][
+                        number_replica = int(cityplan.matrix[cases])
+                        build = project_list[int(replica_list[int(cityplan.matrix[cases])][0])]
+
+                        if type(build) is Utility:
+
+                            if not (number_replica in id_utility_list):
+                                id_utility_list.append(number_replica)
+                                building_coordinates = scoring._coordinates_adaptation(build.matrix,
+                                                                                       replica_list[number_replica][1][
                                                                                            0],
-                                                                                       replica_list[project_number][1][
+                                                                                       replica_list[number_replica][1][
                                                                                            1])
+
                                 for coor in building_coordinates:
                                     cases_configuration.append(coor)
 
@@ -215,7 +219,7 @@ def elitist_solver_solution(filename, error_max, nb_generation):
             tested_replica += 1
 
         print(" =-=-=-=-=-= =-=-=-=-=-=")
-        print("Total score Generation 1 ???????????????? :", score_total)
+        print("Total score Generation ", i, " ???????????????? :", score_total)
         print("--- %s seconds ---" % (time.time() - begin_time))
         print(" =-=-=-=-=-= =-=-=-=-=-=")
 
@@ -231,4 +235,14 @@ def elitist_solver_solution(filename, error_max, nb_generation):
             buildings_with_points.append(all_buildings_scores[i])
 
 
-    print(all_buildings_scores[0][0])
+    print(len(buildings_with_points))
+
+
+    ## Fait : Calcul du score par batiment résidentiel
+    ## Fait : Calcul de la place occupé par configuration (1 résidence + utilitaires)
+    ## Fait : Trie des résidences par densité (score/taille)
+    ## Fait : Garder que les batiments qui ont un score > 0
+
+    ## TODO : Ne garder qu'un pourcentage précis de batiments
+    ## TODO : Copier les configurations des batiments sélectionnés dans de nouvelles matrices (nouvelle génération)
+    ## TODO : Remplir les nouvelles matrices avec du random
