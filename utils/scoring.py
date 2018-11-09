@@ -154,20 +154,20 @@ def _coordinates_adaptation(buildingPlan, rowTop, colTop):
 ##TODO: Optimisaion des cases sur lesquelles calculer la distance
 
 
-# def building_score(cityplan, row, col, project_list, project_number):
-#     plan = project_list[int(project_number)].matrix
-#     adapted_coordinates = _coordinates_adaptation(plan, row, col)
-#     score = 0
-#     types = []
-#     manhattan_residence_area = project_list[int(project_number)].get_manhattan_surface(
-#         int(cityplan.dist_manhattan_max), cityplan.matrix, adapted_coordinates)
-#
-#     for coordinates in manhattan_residence_area:
-#         if str(cityplan.matrix[coordinates]) != ".":
-#             building = project_list[int(cityplan.matrix[coordinates])]
-#             if type(building) is Utility.Utility:
-#                 if not (building.type in types):
-#                     types.append(building.type)
-#                     score += int(project_list[int(project_number)].capacity)
-#
-#     return score
+def building_score(cityplan, row, col, project_list, project_number, replica_list):
+    plan = project_list[int(project_number)].matrix
+    adapted_coordinates = _coordinates_adaptation(plan, row, col)
+    score = 0
+    types = []
+    manhattan_residence_area = project_list[int(project_number)].get_manhattan_surface(
+        int(cityplan.dist_manhattan_max), cityplan.matrix, adapted_coordinates)
+
+    for coordinates in manhattan_residence_area:
+        if str(cityplan.matrix[coordinates]) != ".":
+            building = project_list[int(replica_list[int(cityplan.matrix[coordinates])][0])]
+            if type(building) is Utility.Utility:
+                if not (building.type in types):
+                    types.append(building.type)
+                    score += int(project_list[int(project_number)].capacity)
+
+    return score
