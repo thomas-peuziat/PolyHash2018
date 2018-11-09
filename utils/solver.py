@@ -119,26 +119,13 @@ def advanced_random_solver_solution(filename, trials_max, error_max):
     _print_solution(filename, trials_max, max_score)
 
 
-def _print_solver(len_replica_list):
-    print("\nReplica count :", len_replica_list, '\n -------------')
-
-
-def _print_solution(filename, trials_max, max_score):
-    print(" ~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~")
-    print("Best score for", filename, "with", trials_max, "trials is :", max_score)
-    print("You can find the output in polyhash2018/data/output")
-    print(" ~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~")
-
-
 def elitist_solver_solution(filename, error_max, generation_max):
-    all_buildings_scores = []
-    buildings_with_points = []
-
-
-    #all_cityplans = []
     cityplan, project_list = parser.parse(filename)  # Génère un CityPlan vide et une liste de Project
 
-    for generation_number in range(0, generation_max):
+    for generation_number in range(1, generation_max+1):
+        buildings_with_points = []
+        configuration_list = []
+        best_building_with_points = []
 
         #TODO: Replacer dans la map les meilleurs building
         taille_matrix = cityplan.matrix.shape
@@ -148,10 +135,9 @@ def elitist_solver_solution(filename, error_max, generation_max):
         print("...")
 
         # Génération d'une population aléatoire
-        cityplan, replica_list = _advanced_random_solver(cityplan, project_list,
-                                                                error_max)  # Rempli le CityPlan et renvoi une liste de Replica
-
-        # all_cityplans.append(cityplan)  # Ajout des différents cityplans dans le cas d'une génération avec plusieurs populations
+        cityplan, replica_list = _advanced_random_solver(cityplan, project_list, error_max)  # Rempli le CityPlan et renvoi une liste de Replica
+        parser.imgify(filename+str(generation_number), cityplan, project_list, replica_list)
+        parser.textify(replica_list, filename+str(generation_number))
 
         begin_time = time.time()
         tested_replica = 0
@@ -172,9 +158,6 @@ def elitist_solver_solution(filename, error_max, generation_max):
                                                         replica_list)  # Calcul des scores de chaque batiments
                 score_total += building_score
 
-                all_buildings_scores.append(
-                    [building_score, (row, col), project_number])  # Ajout des scores de chaque batiments
-
                 plan = project_list[project_number].matrix
                 resid_adapted_coordinates = scoring._coordinates_adaptation(plan, row, col)
 
@@ -193,7 +176,6 @@ def elitist_solver_solution(filename, error_max, generation_max):
                         build = project_list[int(replica_list[int(cityplan.matrix[cases])][0])]
 
                         if type(build) is Utility:
-
                             if not (number_replica in id_utility_list):
                                 id_utility_list.append(number_replica)
                                 building_coordinates = scoring._coordinates_adaptation(build.matrix,
@@ -206,7 +188,7 @@ def elitist_solver_solution(filename, error_max, generation_max):
                                     cases_configuration.append(coor)
 
                 # Calcul de l'espace utilisée par la configuration
-                if cases_configuration != []:
+                if cases_configuration:
                     cases_configuration.sort(key=lambda x: (x[0], x[1]))
                     row_top = int(cases_configuration[0][0])
                     row_bottom = int(cases_configuration[len(cases_configuration) - 1][0])
@@ -219,8 +201,7 @@ def elitist_solver_solution(filename, error_max, generation_max):
                     taille_reelle = taille[0] * taille[1]
                     densite = building_score / taille_reelle
 
-                    all_buildings_scores.append(
-                        [densite, (row, col), project_number, generation_number])  # Ajout des scores de chaque batiments
+                    configuration_list.append([densite, (row, col), project_number, generation_number, taille_reelle])  # Ajout des scores de chaque batiments
             tested_replica += 1
 
         print(" =-=-=-=-=-= =-=-=-=-=-=")
@@ -229,29 +210,34 @@ def elitist_solver_solution(filename, error_max, generation_max):
         print(" =-=-=-=-=-= =-=-=-=-=-=")
 
         # Triage des scores par ordre décroissant de la densitées
-        all_buildings_scores.sort(reverse=True)
+        configuration_list.sort(reverse=True)
 
         # Suppression des résidences qui rapportent zéro points
-        for idx in range(0, len(all_buildings_scores)):
-            if int(all_buildings_scores[idx][0]) != 0:
-                buildings_with_points.append(all_buildings_scores[idx])
+        for idx in range(0, len(configuration_list)):
+            if configuration_list[idx][0] > 0:
+                buildings_with_points.append(configuration_list[idx])
 
         # Garde les meilleurs generation_number/generation_max
-        # best_building_with_points = []
-        # for idx in range(0, int((generation_number/generation_max)*len(buildings_with_points))):
-        #     best_building_with_points.append(buildings_with_points[idx])
-        #
-        # print("Building with points:", len(buildings_with_points))
-        # print("Best :", len(best_building_with_points))
-
-    #print(len(buildings_with_points))
+        for idx in range(0, int((generation_number/generation_max)*len(buildings_with_points))):
+            best_building_with_points.append(buildings_with_points[idx])
 
 
     ## Fait : Calcul du score par batiment résidentiel
     ## Fait : Calcul de la place occupé par configuration (1 résidence + utilitaires)
     ## Fait : Trie des résidences par densité (score/taille)
     ## Fait : Garder que les batiments qui ont un score > 0
+    ## Fait : Ne garder qu'un pourcentage précis de batiments
 
-    ## TODO : Ne garder qu'un pourcentage précis de batiments
     ## TODO : Copier les configurations des batiments sélectionnés dans de nouvelles matrices (nouvelle génération)
     ## TODO : Remplir les nouvelles matrices avec du random
+
+
+def _print_solver(len_replica_list):
+    print("\nReplica count :", len_replica_list, '\n -------------')
+
+
+def _print_solution(filename, trials_max, max_score):
+    print(" ~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~")
+    print("Best score for", filename, "with", trials_max, "trials is :", max_score)
+    print("You can find the output in polyhash2018/data/output")
+    print(" ~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~")
