@@ -66,12 +66,12 @@ def random_solver_solution(filename, trials_max, error_max):
     _print_solution(filename, trials_max, max_score)
 
 
-def _advanced_random_solver(cityplan: CityPlan, project_list: list, error_max: int):
+def _advanced_random_solver(cityplan: CityPlan, project_list: list, error_max: int, replica_list = []):
     if error_max >= 0:
         error = 0
         len_project_list = len(project_list)
         row_max, column_max = cityplan.matrix.shape
-        replica_list = []
+        #replica_list = []
 
 
         while error < error_max:
@@ -121,28 +121,31 @@ def advanced_random_solver_solution(filename, trials_max, error_max):
 
 def elitist_solver_solution(filename, error_max, generation_max):
     cityplan, project_list = parser.parse(filename)  # Génère un CityPlan vide et une liste de Project
+    best_building_with_points = []
+    taille_matrix = cityplan.matrix.shape
 
     for generation_number in range(1, generation_max+1):
         buildings_with_points = []
         configuration_list = []
-        best_building_with_points = []
 
-        #TODO: Replacer dans la map les meilleurs building
-        taille_matrix = cityplan.matrix.shape
-        cityplan.matrix = np.full(taille_matrix, '.', dtype=np.dtype('U9'))
+        # on récupère un cityplan et un replica_list avec les anciens meilleurs batiments
+        cityplan, replica_list = _copy_best_buildings_in_matrix(cityplan, project_list, best_building_with_points, taille_matrix)
+        # réinitialisation de la variable
+        best_building_with_points = []
 
         print("Elitist solver for :", cityplan.name_project)
         print("...")
 
         # Génération d'une population aléatoire
-        cityplan, replica_list = _advanced_random_solver(cityplan, project_list, error_max)  # Rempli le CityPlan et renvoi une liste de Replica
+        cityplan, replica_list = _advanced_random_solver(cityplan, project_list, error_max, replica_list)  # Rempli le CityPlan et renvoi une liste de Replica
+
         parser.imgify(filename+str(generation_number), cityplan, project_list, replica_list)
         parser.textify(replica_list, filename+str(generation_number))
 
         begin_time = time.time()
         tested_replica = 0
         len_replica_list = len(replica_list)
-        # score correspond au score total d'une génération
+        # score_total correspond au score total d'une génération
         score_total = 0
 
         # Lecture des repliques placées dans la map
@@ -205,7 +208,7 @@ def elitist_solver_solution(filename, error_max, generation_max):
             tested_replica += 1
 
         print(" =-=-=-=-=-= =-=-=-=-=-=")
-        print("Total score Generation ", generation_number, " ???????????????? :", score_total)
+        print("Total score Generation ", generation_number, "------------------------> ", score_total)
         print("--- %s seconds ---" % (time.time() - begin_time))
         print(" =-=-=-=-=-= =-=-=-=-=-=")
 
@@ -227,8 +230,8 @@ def elitist_solver_solution(filename, error_max, generation_max):
     ## Fait : Trie des résidences par densité (score/taille)
     ## Fait : Garder que les batiments qui ont un score > 0
     ## Fait : Ne garder qu'un pourcentage précis de batiments
+    ## Fait : Copier les configurations des batiments sélectionnés dans de nouvelles matrices (nouvelle génération)
 
-    ## TODO : Copier les configurations des batiments sélectionnés dans de nouvelles matrices (nouvelle génération)
     ## TODO : Remplir les nouvelles matrices avec du random
 
 
@@ -241,3 +244,25 @@ def _print_solution(filename, trials_max, max_score):
     print("Best score for", filename, "with", trials_max, "trials is :", max_score)
     print("You can find the output in polyhash2018/data/output")
     print(" ~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~")
+
+
+def _copy_best_buildings_in_matrix(cityplan, project_list, best_building_with_points, taille_matrix):
+    #0 densite
+    #1 top left
+    #2 num projet
+    #3 num generation
+
+    replica_list = []
+
+    # si il n'y avait pas de liste avec les meilleurs batiments (correspond à la génération 1)
+    if len(best_building_with_points) == 0:
+        cityplan.matrix = np.full(taille_matrix, '.', dtype=np.dtype('U9'))
+    else:
+        cityplan.matrix = np.full(taille_matrix, '.', dtype=np.dtype('U9'))
+        # on replace les meilleurs batiments et on regénère la replica_list
+        for index, building in enumerate(best_building_with_points):
+            replica_list.append([building[2], building[1]])
+            id_replica = len(replica_list)
+            cityplan.add(project_list[building[2]], building[1][0], building[1][1], id_replica)
+
+    return cityplan, replica_list
