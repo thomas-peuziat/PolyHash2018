@@ -6,7 +6,6 @@ class Project:
         self.id = id
         self.matrix = matrix
         self.shape = matrix.shape
-        self.list_pos_replica = []
 
     # acces aux valeurs de la matrice la ligne puis la colonne
     """

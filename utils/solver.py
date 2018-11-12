@@ -30,7 +30,6 @@ def _random_solver(cityplan: CityPlan, project_list: list, error_max: int):
             if cityplan.add(project_list[random_idx], random_pos[0], random_pos[1], id_replica):
                 error = error_max
 
-                project_list[random_idx].list_pos_replica.append((random_pos[0], random_pos[1]))
                 replica = [random_idx, (random_pos[0], random_pos[1])]
                 replica_list.append(replica)
 
@@ -66,13 +65,14 @@ def random_solver_solution(filename, trials_max, error_max):
     _print_solution(filename, trials_max, max_score)
 
 
-def _advanced_random_solver(cityplan: CityPlan, project_list: list, error_max: int, replica_list = []):
+def _advanced_random_solver(cityplan: CityPlan, project_list: list, error_max: int, replica_list=None):
+    if replica_list is None:
+        replica_list = []
     if error_max >= 0:
         error = 0
         len_project_list = len(project_list)
         row_max, column_max = cityplan.matrix.shape
         #replica_list = []
-
 
         while error < error_max:
             random_idx = random.randint(0, len_project_list - 1)
@@ -80,7 +80,6 @@ def _advanced_random_solver(cityplan: CityPlan, project_list: list, error_max: i
 
             id_replica = len(replica_list)
             if cityplan.add(project_list[random_idx], random_pos[0], random_pos[1], id_replica):
-                project_list[random_idx].list_pos_replica.append((random_pos[0], random_pos[1]))
                 replica = [random_idx, (random_pos[0], random_pos[1])]
                 replica_list.append(replica)
             else:
