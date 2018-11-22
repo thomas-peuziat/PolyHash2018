@@ -224,14 +224,6 @@ def elitist_solver_solution(filename, error_max, generation_max):
             best_building_with_points.append(buildings_with_points[idx])
 
 
-    ## Fait : Calcul du score par batiment résidentiel
-    ## Fait : Calcul de la place occupé par configuration (1 résidence + utilitaires)
-    ## Fait : Trie des résidences par densité (score/taille)
-    ## Fait : Garder que les batiments qui ont un score > 0
-    ## Fait : Ne garder qu'un pourcentage précis de batiments
-    ## Fait : Copier les configurations des batiments sélectionnés dans de nouvelles matrices (nouvelle génération)
-
-    ## TODO : Remplir les nouvelles matrices avec du random
 
 
 def _print_solver(len_replica_list):
