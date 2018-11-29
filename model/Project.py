@@ -1,23 +1,31 @@
+""" Classe Project généralisant les sous classes Utility et Residential"""
 
 
 class Project:
 
     def __init__(self, id, matrix):
+        """
+         Constructeur de la classe Project
+
+         :param: id: correspond à l'id du projet
+         :param: matrix: correspond à la matrice du projet
+        """
         self.id = id
         self.matrix = matrix
         self.shape = matrix.shape
 
-    # acces aux valeurs de la matrice la ligne puis la colonne
-    """
-    Fonction permettant de savoir si on peut placer une matrice dans une autre
-    param :
-    destination_matrix : la matrice dans laquelle on veut se placer
-    row : numéro de la ligne où l'on veut placer notre projet
-    column : numéro de la colonne où l'on veut placer notre projet
-
-    return : True si c'est possible de le placer et Fakse sinon
-    """
     def is_placeable(self, destination_matrix, row: int, column: int) -> bool:
+        """
+        Fonction permettant de savoir si on peut placer une matrice dans une autre
+
+         :param: destination_matrix : la matrice dans laquelle on veut se placer
+         :param: row : numéro de la ligne où l'on veut placer notre projet
+         :param: column : numéro de la colonne où l'on veut placer notre projet
+
+         :param:
+         :return: True si c'est possible de le placer et False sinon
+
+        """
         try:
             idx_project_row = 0
             idx_project_column = 0
@@ -43,14 +51,17 @@ class Project:
         except IndexError:
             return False
 
-    """
-    Fonction permettant de retourner une liste de position représentant la surface couverte par (le batiment + la distance de manhattan)
-    :parameter
-    dist = la distance de manhattan
-    matrix = la matrice du CityPlan
-    list_coordinates_full = les positions remplies par le batiment
-    """
     def get_manhattan_surface(self, dist, matrix, list_coordinates_full):
+        """
+        Fonction permettant de retourner une liste de position représentant la surface couverte par (le batiment + la distance de manhattan)
+
+         :param: dist: correspond à la distance de manhattan
+         :param: matrix: correspond à la matrice du CityPlan
+         :param: list_coordinates_full: correspond aux positions remplies par le batiment
+         :return: list_valid_coordinates: liste contenant les coordonnées couvertes par la distance de manhattan
+         :rtype: list
+
+        """
         list_valid_coordinates = []
         nb_row_matrix, nb_column_matrix = matrix.shape
 
@@ -186,18 +197,20 @@ class Project:
         list_valid_coordinates = set(list_valid_coordinates)
         return list_valid_coordinates
 
-    """
-    Méthode permettant d'ajouter à la liste les diagonales entre deux points (haut et droit)
-    :parameter
-    point_A = point correspondant à point_haut (si dépassement des limites de la matrice, alors il a pour numéro de ligne :0)
-    point_B = point correspondant à point_droit (si dépassement des limites de la matrice, alors il a pour numéro de colonnes : max(numéro de colonnes de la matrice)
-    list_valid_coordinates = liste contenant les positions de la surface de manhattan
-    list_coordinates_full = liste contenant les positions du bâtiment
-    matrix = la matrice du cityPlan
-    cpt_decalage_haut = compteur représentant de combien le point à dépasser vers le haut
-    cpt_decalage_droite = compteur représentant de combien le point à dépasser vers la droite
-    """
+
     def _diagonale_haut_droit(self, point_A, point_B, list_valid_coordinates, list_coordinates_full, matrix, cpt_decalage_haut=0, cpt_decalage_droite=0):
+        """
+        Méthode permettant d'ajouter à la liste les diagonales entre deux points (haut et droit)
+
+         :param: point_A: correspondant à point_haut (si dépassement des limites de la matrice, alors il a pour numéro de ligne :0)
+         :param: point_B: correspondant à point_droit (si dépassement des limites de la matrice, alors il a pour numéro de colonnes : max(numéro de colonnes de la matrice)
+         :param: list_valid_coordinates: liste contenant les positions de la surface de manhattan
+         :param: list_coordinates_full: liste contenant les positions du bâtiment
+         :param: matrix: la matrice du cityPlan
+         :param: cpt_decalage_haut: compteur représentant de combien le point à dépasser vers le haut
+         :param: cpt_decalage_droite: compteur représentant de combien le point à dépasser vers la droite
+
+        """
         # on récupère la taille de la matrice
         nb_row_matrix, nb_column_matrix = matrix.shape
 
@@ -233,18 +246,19 @@ class Project:
             # le point_A change en prenant un ligne de plus (vers le bas) et un décalage vers la droite
             point_A = (point_A[0] + 1, point_A[1] + 1)
 
-    """
-    Méthode permettant d'ajouter à la liste les diagonales entre deux points (droit et bas)
-    :parameter
-    point_A = point correspondant à point_droit (si dépassement des limites de la matrice, alors il a pour numéro de colonnes : max(numéro de colonnes de la matrice)
-    point_B = point correspondant à point_bas (si dépassement des limites de la matrice, alors il a pour numéro de lignes : max(numéro de lignes de la matrice)
-    list_valid_coordinates = liste contenant les positions de la surface de manhattan
-    list_coordinates_full = liste contenant les positions du bâtiment
-    matrix = la matrice du cityPlan
-    cpt_decalage_droit = compteur représentant de combien le point à dépasser vers la droite
-    cpt_decalage_bas = compteur représentant de combien le point à dépasser vers le bas
-    """
     def _diagonale_droit_bas(self, point_A, point_B, list_valid_coordinates, list_coordinates_full, matrix, cpt_decalage_droit=0, cpt_decalage_bas=0):
+        """
+    Méthode permettant d'ajouter à la liste les diagonales entre deux points (droit et bas)
+
+         :param: point_A: correspondant à point_droit (si dépassement des limites de la matrice, alors il a pour numéro de colonnes : max(numéro de colonnes de la matrice)
+         :param: point_B: correspondant à point_bas (si dépassement des limites de la matrice, alors il a pour numéro de lignes : max(numéro de lignes de la matrice)
+         :param: list_valid_coordinates: liste contenant les positions de la surface de manhattan
+         :param: list_coordinates_full: liste contenant les positions du bâtiment
+         :param: matrix: la matrice du cityPlan
+         :param: cpt_decalage_droite: compteur représentant de combien le point à dépasser vers la droite
+         :param: cpt_decalage_bas: compteur représentant de combien le point à dépasser vers le bas
+
+        """
         # on récupère la taille de la matrice
         nb_row_matrix, nb_column_matrix = matrix.shape
 
@@ -280,18 +294,19 @@ class Project:
             # le point_A change en prenant un ligne de plus (vers le bas) et un décalage vers la gauche
             point_A = (point_A[0] + 1, point_A[1] - 1)
 
-    """
-    Méthode permettant d'ajouter à la liste les diagonales entre deux points (bas et gauche)
-    :parameter
-    point_A = point correspondant à point_bas (si dépassement des limites de la matrice, alors il a pour numéro de lignes : max(numéro de lignes de la matrice)
-    point_B = point correspondant à point_gauche (si dépassement des limites de la matrice, alors il a pour numéro de colonnes : 0)
-    list_valid_coordinates = liste contenant les positions de la surface de manhattan
-    list_coordinates_full = liste contenant les positions du bâtiment
-    matrix = la matrice du cityPlan
-    cpt_decalage_bas = compteur représentant de combien le point à dépasser vers le bas
-    cpt_decalage_gauche = compteur représentant de combien le point à dépasser vers la gauche
-    """
     def _diagonale_bas_gauche(self, point_A, point_B, list_valid_coordinates, list_coordinates_full, matrix, cpt_decalage_bas=0, cpt_decalage_gauche=0):
+        """
+    Méthode permettant d'ajouter à la liste les diagonales entre deux points (bas et gauche)
+
+         :param: point_A: correspondant à point_bas (si dépassement des limites de la matrice, alors il a pour numéro de lignes : max(numéro de lignes de la matrice)
+         :param: point_B: correspondant à point_gauche (si dépassement des limites de la matrice, alors il a pour numéro de colonnes : 0)
+         :param: list_valid_coordinates: liste contenant les positions de la surface de manhattan
+         :param: list_coordinates_full: liste contenant les positions du bâtiment
+         :param: matrix: la matrice du cityPlan
+         :param: cpt_decalage_bas: compteur représentant de combien le point à dépasser vers le bas
+         :param: cpt_decalage_gauche: compteur représentant de combien le point à dépasser vers la gauche
+
+        """
         # on récupère la taille de la matrice
         nb_row_matrix, nb_column_matrix = matrix.shape
 
@@ -327,18 +342,19 @@ class Project:
             # le point_A change en prenant un ligne de moins (vers le haut) et un décalage vers la gauche
             point_A = (point_A[0] - 1, point_A[1] - 1)
 
-    """
-    Méthode permettant d'ajouter à la liste les diagonales entre deux points (gauche et haut)
-    :parameter
-    point_A = point correspondant à point_gauche (si dépassement des limites de la matrice, alors il a pour numéro de colonnes : 0)
-    point_B = point correspondant à point_haut (si dépassement des limites de la matrice, alors il a pour numéro de ligne :0)
-    list_valid_coordinates = liste contenant les positions de la surface de manhattan
-    list_coordinates_full = liste contenant les positions du bâtiment
-    matrix = la matrice du cityPlan
-    cpt_decalage_gauche = compteur représentant de combien le point à dépasser vers la gauche
-    cpt_decalage_haut = compteur représentant de combien le point à dépasser vers le haut
-    """
     def _diagonale_gauche_haut(self, point_A, point_B, list_valid_coordinates, list_coordinates_full, matrix, cpt_decalage_gauche=0, cpt_decalage_haut=0):
+        """
+    Méthode permettant d'ajouter à la liste les diagonales entre deux points (gauche et haut)
+
+         :param: point_A: correspondant à point_gauche (si dépassement des limites de la matrice, alors il a pour numéro de colonnes : 0)
+         :param: point_B: correspondant à point_haut (si dépassement des limites de la matrice, alors il a pour numéro de ligne :0)
+         :param: list_valid_coordinates: liste contenant les positions de la surface de manhattan
+         :param: list_coordinates_full: liste contenant les positions du bâtiment
+         :param: matrix: la matrice du cityPlan
+         :param: cpt_decalage_gauche: compteur représentant de combien le point à dépasser vers la gauche
+         :param: cpt_decalage_haut: compteur représentant de combien le point à dépasser vers le haut
+
+        """
         # on récupère la taille de la matrice
         nb_row_matrix, nb_column_matrix = matrix.shape
 

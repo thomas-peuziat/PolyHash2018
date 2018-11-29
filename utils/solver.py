@@ -15,6 +15,18 @@ import numpy as np
 
 
 def _random_solver(cityplan: CityPlan, project_list: list, error_max: int):
+    """
+     TODO : A quoi sert la fonction
+
+     :param:
+     :param:
+     :param:
+     :param:
+     :return:
+     :rtype:
+
+     :Example:
+    """
     if error_max >= 0:
         error = error_max
         len_project_list = len(project_list)
@@ -45,6 +57,18 @@ def _random_solver(cityplan: CityPlan, project_list: list, error_max: int):
 
 
 def random_solver_solution(filename, trials_max, error_max):
+    """
+     TODO : A quoi sert la fonction
+
+     :param:
+     :param:
+     :param:
+     :param:
+     :return:
+     :rtype:
+
+     :Example:
+    """
     max_score = 0
     trials_count = 0
     path_out = os.path.join(os.path.curdir, 'data', 'output')
@@ -66,6 +90,18 @@ def random_solver_solution(filename, trials_max, error_max):
 
 
 def _advanced_random_solver(cityplan: CityPlan, project_list: list, error_max: int, replica_list=None):
+    """
+     TODO : A quoi sert la fonction
+
+     :param:
+     :param:
+     :param:
+     :param:
+     :return:
+     :rtype:
+
+     :Example:
+    """
     if replica_list is None:
         replica_list = []
     if error_max >= 0:
@@ -94,6 +130,18 @@ def _advanced_random_solver(cityplan: CityPlan, project_list: list, error_max: i
 
 
 def advanced_random_solver_solution(filename, trials_max, error_max):
+    """
+     TODO : A quoi sert la fonction
+
+     :param:
+     :param:
+     :param:
+     :param:
+     :return:
+     :rtype:
+
+     :Example:
+    """
     max_score = 0
     trials_count = 0
     path_out = os.path.join(os.path.curdir, 'data', 'output')
@@ -119,6 +167,18 @@ def advanced_random_solver_solution(filename, trials_max, error_max):
 
 
 def elitist_solver_solution(filename, error_max, generation_max):
+    """
+     TODO : A quoi sert la fonction
+
+     :param:
+     :param:
+     :param:
+     :param:
+     :return:
+     :rtype:
+
+     :Example:
+    """
     cityplan, project_list = parser.parse(filename)  # Génère un CityPlan vide et une liste de Project
     best_building_with_points = []
     taille_matrix = cityplan.matrix.shape
@@ -227,10 +287,30 @@ def elitist_solver_solution(filename, error_max, generation_max):
 
 
 def _print_solver(len_replica_list):
+    """
+     TODO : A quoi sert la fonction
+
+     :param:
+     :return:
+     :rtype:
+
+     :Example:
+    """
     print("\nReplica count :", len_replica_list, '\n -------------')
 
 
 def _print_solution(filename, trials_max, max_score):
+    """
+     TODO : A quoi sert la fonction
+
+     :param:
+     :param:
+     :param:
+     :return:
+     :rtype:
+
+     :Example:
+    """
     print(" ~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~")
     print("Best score for", filename, "with", trials_max, "trials is :", max_score)
     print("You can find the output in polyhash2018/data/output")
@@ -238,10 +318,18 @@ def _print_solution(filename, trials_max, max_score):
 
 
 def _copy_best_buildings_in_matrix(cityplan, project_list, best_building_with_points, taille_matrix):
-    #0 densite
-    #1 top left
-    #2 num projet
-    #3 num generation
+    """
+     TODO : A quoi sert la fonction
+
+     :param:
+     :param:
+     :param:
+     :param:
+     :return:
+     :rtype:
+
+     :Example:
+    """
 
     replica_list = []
 
@@ -250,7 +338,7 @@ def _copy_best_buildings_in_matrix(cityplan, project_list, best_building_with_po
         cityplan.matrix = np.full(taille_matrix, '.', dtype=np.dtype('U9'))
     else:
         cityplan.matrix = np.full(taille_matrix, '.', dtype=np.dtype('U9'))
-        # on replace les meilleurs batiments et on regénère la replica_list
+        # on replace les meilleurs bâtiments et on regénère la replica_list
         for index, building in enumerate(best_building_with_points):
             replica_list.append([building[2], building[1]])
             id_replica = len(replica_list)

@@ -16,6 +16,18 @@ import time
 
 
 def scoring_from_replica_list(replica_list, cityplan, project_list):
+    """
+     TODO : A quoi sert la fonction
+
+     :param:
+     :param:
+     :param:
+     :param:
+     :return:
+     :rtype:
+
+     :Example:
+    """
     utility_list = []
     residential_list = []
     for replica in replica_list:
@@ -35,11 +47,35 @@ def scoring_from_replica_list(replica_list, cityplan, project_list):
 
 
 def scoring_from_output(filename, cityplan, project_list):
+    """
+     TODO : A quoi sert la fonction
+
+     :param:
+     :param:
+     :param:
+     :param:
+     :return:
+     :rtype:
+
+     :Example:
+    """
     utilitaires_list, residential_list = _output_parser(filename, project_list)
     return _scoring(utilitaires_list, residential_list, cityplan, project_list)
 
 
 def _scoring(utilitaires_list, residential_list, cityplan, project_list, replica_list=None):
+    """
+     TODO : A quoi sert la fonction
+
+     :param:
+     :param:
+     :param:
+     :param:
+     :return:
+     :rtype:
+
+     :Example:
+    """
     begin_time = time.time()
     tested_residential = 0
     score = 0
@@ -77,6 +113,18 @@ def _scoring(utilitaires_list, residential_list, cityplan, project_list, replica
 
 
 def _distance_manhattan(tab_resid, tab_utils):
+    """
+     TODO : A quoi sert la fonction
+
+     :param:
+     :param:
+     :param:
+     :param:
+     :return:
+     :rtype:
+
+     :Example:
+    """
     min = 999
     for coor_resid in tab_resid:
         for coord_util in tab_utils:
@@ -88,6 +136,18 @@ def _distance_manhattan(tab_resid, tab_utils):
 
 
 def _output_parser(filename, project_list):
+    """
+     TODO : A quoi sert la fonction
+
+     :param:
+     :param:
+     :param:
+     :param:
+     :return:
+     :rtype:
+
+     :Example:
+    """
     path = os.path.join(os.path.curdir, 'data', 'output', filename + '.out')
     with open(path, 'r') as input_file:
         buildings_number = input_file.readline()  # get the number of buildings placed in the city
@@ -113,6 +173,18 @@ def _output_parser(filename, project_list):
 
 
 def _coordinates_adaptation(buildingPlan, rowTop, colTop):
+    """
+     TODO : A quoi sert la fonction
+
+     :param:
+     :param:
+     :param:
+     :param:
+     :return:
+     :rtype:
+
+     :Example:
+    """
     list_coordinates = []
     indexRow = 0
     for line in buildingPlan:
@@ -138,6 +210,18 @@ def _coordinates_adaptation(buildingPlan, rowTop, colTop):
 
 
 def building_score(cityplan, row, col, project_list, project_number, replica_list):
+    """
+     TODO : A quoi sert la fonction
+
+     :param:
+     :param:
+     :param:
+     :param:
+     :return:
+     :rtype:
+
+     :Example:
+    """
     plan = project_list[int(project_number)].matrix
     adapted_coordinates = _coordinates_adaptation(plan, row, col)
     score = 0
@@ -157,6 +241,18 @@ def building_score(cityplan, row, col, project_list, project_number, replica_lis
 
 
 def _affichage_score(tested_replica, len_list, score, begin_time, is_residential=True):
+    """
+     TODO : A quoi sert la fonction
+
+     :param:
+     :param:
+     :param:
+     :param:
+     :return:
+     :rtype:
+
+     :Example:
+    """
     print(" ------- " + "{0:.2f}".format(tested_replica / len_list * 100) + '%')
     if is_residential:
         print("Residential tested :", tested_replica, "(of " + str(len_list) + ")")
