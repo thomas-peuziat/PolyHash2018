@@ -16,16 +16,14 @@ import numpy as np
 
 def _random_solver(cityplan: CityPlan, project_list: list, error_max: int):
     """
-     TODO : A quoi sert la fonction
+     Placement aléatoire de bâtiments sur une map
 
-     :param:
-     :param:
-     :param:
-     :param:
-     :return:
-     :rtype:
+     :param: cityplan : Objet CityPlan modélisant la carte de travail
+     :param: project_list : Liste des projets (bâtiments) associés à la carte
+     :param: error_max : Nombre d'erreur maximal pour le placement des bâtiments
+     :return: Map remplie de bâtiments et la liste des repliques placées
+     :rtype: CityPlan et Liste
 
-     :Example:
     """
     if error_max >= 0:
         error = error_max
@@ -58,16 +56,11 @@ def _random_solver(cityplan: CityPlan, project_list: list, error_max: int):
 
 def random_solver_solution(filename, trials_max, error_max):
     """
-     TODO : A quoi sert la fonction
+     Génère la solution de l'algorithme aléatoire
 
-     :param:
-     :param:
-     :param:
-     :param:
-     :return:
-     :rtype:
-
-     :Example:
+     :param: filename : Nom du fichier (sans extension)
+     :param: trials_max : Nombre d'essai de l'application de l'algorithme aléatoire
+     :param: error_max : Nombre d'erreur maximal pour le placement des bâtiments
     """
     max_score = 0
     trials_count = 0
@@ -91,16 +84,14 @@ def random_solver_solution(filename, trials_max, error_max):
 
 def _advanced_random_solver(cityplan: CityPlan, project_list: list, error_max: int, replica_list=None):
     """
-     TODO : A quoi sert la fonction
+     Algorithme aléatoire amélioré (error_max par batiment et non pour la génération entière)
 
-     :param:
-     :param:
-     :param:
-     :param:
-     :return:
-     :rtype:
+     :param: cityplan : Objet CityPlan modélisant la carte de travail
+     :param: project_list : Liste des projets (bâtiments) associés à la carte
+     :param: error_max : Nombre d'erreur maximal pour le placement des bâtiments
+     :return: Map remplie de bâtiments et la liste des repliques placées
+     :rtype: CityPlan et Liste
 
-     :Example:
     """
     if replica_list is None:
         replica_list = []
@@ -131,16 +122,12 @@ def _advanced_random_solver(cityplan: CityPlan, project_list: list, error_max: i
 
 def advanced_random_solver_solution(filename, trials_max, error_max):
     """
-     TODO : A quoi sert la fonction
+     Génère la solution de l'algorithme aléatoire avancé
 
-     :param:
-     :param:
-     :param:
-     :param:
-     :return:
-     :rtype:
+     :param: filename : Nom du fichier (sans extension)
+     :param: trials_max : Nombre d'essai de l'application de l'algorithme aléatoire
+     :param: error_max : Nombre d'erreur maximal pour le placement des bâtiments
 
-     :Example:
     """
     max_score = 0
     trials_count = 0
@@ -168,16 +155,14 @@ def advanced_random_solver_solution(filename, trials_max, error_max):
 
 def elitist_solver_solution(filename, error_max, generation_max):
     """
-     TODO : A quoi sert la fonction
+     Algorithme élitiste de notre projet
 
-     :param:
-     :param:
-     :param:
-     :param:
-     :return:
-     :rtype:
+     :param: filename : Nom du fichier (sans extension)
+     :param: trials_max : Nombre d'essai de l'application de l'algorithme aléatoire
+     :param: error_max : Nombre d'erreur maximal pour le placement des bâtiments
+     :return: Affichage d'infomrations et génération de l'output
+     :rtype: String
 
-     :Example:
     """
     cityplan, project_list = parser.parse(filename)  # Génère un CityPlan vide et une liste de Project
     best_building_with_points = []
@@ -288,28 +273,27 @@ def elitist_solver_solution(filename, error_max, generation_max):
 
 def _print_solver(len_replica_list):
     """
-     TODO : A quoi sert la fonction
+     Afficher le nombre de répliques
 
-     :param:
-     :return:
-     :rtype:
+     :param: len_replica_list : longueur de la liste de repliques
+     :return: Affiche des informations sur le nombre de repliques
+     :rtype: String
 
-     :Example:
+
     """
     print("\nReplica count :", len_replica_list, '\n -------------')
 
 
 def _print_solution(filename, trials_max, max_score):
     """
-     TODO : A quoi sert la fonction
+     Afficher les informations sur le meilleur score
 
-     :param:
-     :param:
-     :param:
-     :return:
-     :rtype:
+     :param: filename : Nom du fichier (sans extension)
+     :param: trials_max : Nombre d'essai de l'application de l'algorithme aléatoire
+     :param: max_score : Score maximal actuel
+     :return: Affiche des informations sur le meilleur score
+     :rtype: String
 
-     :Example:
     """
     print(" ~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~")
     print("Best score for", filename, "with", trials_max, "trials is :", max_score)
@@ -319,16 +303,15 @@ def _print_solution(filename, trials_max, max_score):
 
 def _copy_best_buildings_in_matrix(cityplan, project_list, best_building_with_points, taille_matrix):
     """
-     TODO : A quoi sert la fonction
+        Replacement des meilleures configurations de la génération N-1 dans la génération N
 
-     :param:
-     :param:
-     :param:
-     :param:
-     :return:
-     :rtype:
+     :param: cityplan : Objet CityPlan modélisant la carte de travail
+     :param: project_list : Liste des projets (bâtiments) associés à la carte
+     :param: best_build_with_points : Liste des bâtiments ayant les plus grands score
+     :param: taille_matrix : taille de la matrice
+     :return: cityplan avec les batiments replacés et la liste de répliques
+     :rtype: CityPlan, Liste
 
-     :Example:
     """
 
     replica_list = []

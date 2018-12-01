@@ -17,16 +17,14 @@ import time
 
 def scoring_from_replica_list(replica_list, cityplan, project_list):
     """
-     TODO : A quoi sert la fonction
+     Calcul le score d'une map à partir de la liste de repliques placées sur cette carte
 
-     :param:
-     :param:
-     :param:
-     :param:
-     :return:
-     :rtype:
+     :param: replica_list : Liste des repliques placées
+     :param: cityplan : Objet CityPlan modélisant la carte de travail
+     :param: project_list : Liste des projets (bâtiments) associés à la carte
+     :return: Résultat du score de la carte
+     :rtype: Entier
 
-     :Example:
     """
     utility_list = []
     residential_list = []
@@ -48,16 +46,16 @@ def scoring_from_replica_list(replica_list, cityplan, project_list):
 
 def scoring_from_output(filename, cityplan, project_list):
     """
-     TODO : A quoi sert la fonction
+     Calcul le score d'une map à partir de son fichier d'un ficier de sortie
 
-     :param:
-     :param:
-     :param:
-     :param:
-     :return:
-     :rtype:
+     :param: filename : Nom du fichier (sans extensions)
+     :param: cityplan : Objet CityPlan modélisant la carte de travail
+     :param: project_list : Liste des projets (bâtiments) associés à la carte
+     :return: Résultat du score de la carte
+     :rtype: Entier
 
      :Example:
+            scoring_from_output("a_example", cityplan, project_list)
     """
     utilitaires_list, residential_list = _output_parser(filename, project_list)
     return _scoring(utilitaires_list, residential_list, cityplan, project_list)
@@ -65,16 +63,16 @@ def scoring_from_output(filename, cityplan, project_list):
 
 def _scoring(utilitaires_list, residential_list, cityplan, project_list, replica_list=None):
     """
-     TODO : A quoi sert la fonction
+     Fonction appelée pour le calcul du score via replica_list ou project_list
 
-     :param:
-     :param:
-     :param:
-     :param:
-     :return:
-     :rtype:
+     :param: utilitaires_list: Liste des utilitaires placés sur la map
+     :param: residential_list : Liste des résidences placées sur la map
+     :param: cityplan : Objet CityPlan modélisant la carte de travail
+     :param: project_list : Liste des projets (bâtiments) associés à la carte
+     :param: replica_list : Liste des repliques placées
+     :return: Le score de la map
+     :rtype: Entier
 
-     :Example:
     """
     begin_time = time.time()
     tested_residential = 0
@@ -114,16 +112,13 @@ def _scoring(utilitaires_list, residential_list, cityplan, project_list, replica
 
 def _distance_manhattan(tab_resid, tab_utils):
     """
-     TODO : A quoi sert la fonction
+     Calcul la fistance de manhattan entre un bâtiment résidentiel et un bâtiment utilitaire
 
-     :param:
-     :param:
-     :param:
-     :param:
-     :return:
-     :rtype:
+     :param: tab_resid : Tableau des coordonnées du bâtiment résidentiel
+     :param: tab_utils : Tableau des coordonnées du bâtiment utilitaire
+     :return: La distance minimale entre une résidence et un utilitaire
+     :rtype: Entier
 
-     :Example:
     """
     min = 999
     for coor_resid in tab_resid:
@@ -137,14 +132,13 @@ def _distance_manhattan(tab_resid, tab_utils):
 
 def _output_parser(filename, project_list):
     """
-     TODO : A quoi sert la fonction
+     Extrait les bâtiments placés dans le fichier de sortie pour les ajouter à leur liste respective
 
-     :param:
-     :param:
-     :param:
-     :param:
-     :return:
-     :rtype:
+     :param: filename: Nom du fichier (sans extension)
+     :param: project_list : Liste des projets (bâtiments) associés à la carte
+     :return: La liste des bâtiments résidentiels et utilitaires
+     :rtype: utils : Liste de coordonnées
+     :rtype: resid : Liste de coordonnées
 
      :Example:
     """
@@ -174,13 +168,12 @@ def _output_parser(filename, project_list):
 
 def _coordinates_adaptation(buildingPlan, rowTop, colTop):
     """
-     TODO : A quoi sert la fonction
+     Permet de détermier les coordonnées d'un bâtiment tels quels sont lorsque celui-ci est sur la map
 
-     :param:
-     :param:
-     :param:
-     :param:
-     :return:
+     :param: buildingPlan : Plan du bâtiment
+     :param: rowTop : ligne top_left du bâtiment sur la map
+     :param: colTop : colonne top_left du bâtiment sur la map
+     :return: Liste des coordonnées complètes d'un bâtiment
      :rtype:
 
      :Example:
@@ -211,14 +204,16 @@ def _coordinates_adaptation(buildingPlan, rowTop, colTop):
 
 def building_score(cityplan, row, col, project_list, project_number, replica_list):
     """
-     TODO : A quoi sert la fonction
+     Calcul du score d'un bâtiment particulier
 
-     :param:
-     :param:
-     :param:
-     :param:
-     :return:
-     :rtype:
+     :param: cityplan : Objet CityPlan modélisant la carte de travail
+     :param: row : ligne top_left du bâtiment sur la map
+     :param: col : colonne top_left du bâtiment sur la map
+     :param: project_list : Liste des projets (bâtiments) associés à la carte
+     :param: project_number : Numéro de projet du bâtiment
+     :param: replica_list : Liste des repliques placées
+     :return: Score du bâtiment
+     :rtype: Entier
 
      :Example:
     """
@@ -242,14 +237,15 @@ def building_score(cityplan, row, col, project_list, project_number, replica_lis
 
 def _affichage_score(tested_replica, len_list, score, begin_time, is_residential=True):
     """
-     TODO : A quoi sert la fonction
+     Affichage des informations lors du calcul du score
 
-     :param:
-     :param:
-     :param:
-     :param:
-     :return:
-     :rtype:
+     :param: tested_replica : Nombre de réplique déjà testée
+     :param: len_list : Nombre de réplique déjà testée
+     :param: score : Score actuel
+     :param: begin_time : Heure du début du calcul du score
+     :param: is_residential : Nature du bâtiment (résidentiel ou utilitaire)
+     :return: Informations
+     :rtype: String
 
      :Example:
     """
