@@ -17,9 +17,9 @@ import time
 
 def scoring_from_replica_list(replica_list, cityplan, project_list):
     """
-     Calcul le score d'une map à partir de la liste de repliques placées sur cette carte
+     Calcul le score d'une map à partir de la liste des répliques placées sur cette carte
 
-     :param: replica_list : Liste des repliques placées
+     :param: replica_list : Liste des répliques placées
      :param: cityplan : Objet CityPlan modélisant la carte de travail
      :param: project_list : Liste des projets (bâtiments) associés à la carte
      :return: Résultat du score de la carte
@@ -69,7 +69,7 @@ def _scoring(utilitaires_list, residential_list, cityplan, project_list, replica
      :param: residential_list : Liste des résidences placées sur la map
      :param: cityplan : Objet CityPlan modélisant la carte de travail
      :param: project_list : Liste des projets (bâtiments) associés à la carte
-     :param: replica_list : Liste des repliques placées
+     :param: replica_list : Liste des répliques placées
      :return: Le score de la map
      :rtype: Entier
 
@@ -112,7 +112,7 @@ def _scoring(utilitaires_list, residential_list, cityplan, project_list, replica
 
 def _distance_manhattan(tab_resid, tab_utils):
     """
-     Calcul la fistance de manhattan entre un bâtiment résidentiel et un bâtiment utilitaire
+     Calcul la distance de manhattan entre un bâtiment résidentiel et un bâtiment utilitaire
 
      :param: tab_resid : Tableau des coordonnées du bâtiment résidentiel
      :param: tab_utils : Tableau des coordonnées du bâtiment utilitaire
@@ -140,7 +140,6 @@ def _output_parser(filename, project_list):
      :rtype: utils : Liste de coordonnées
      :rtype: resid : Liste de coordonnées
 
-     :Example:
     """
     path = os.path.join(os.path.curdir, 'data', 'output', filename + '.out')
     with open(path, 'r') as input_file:
@@ -168,15 +167,13 @@ def _output_parser(filename, project_list):
 
 def _coordinates_adaptation(buildingPlan, rowTop, colTop):
     """
-     Permet de détermier les coordonnées d'un bâtiment tels quels sont lorsque celui-ci est sur la map
+     Permet de détermier les coordonnées d'un bâtiment tels quelles sont lorsque celui-ci est sur la map
 
      :param: buildingPlan : Plan du bâtiment
      :param: rowTop : ligne top_left du bâtiment sur la map
      :param: colTop : colonne top_left du bâtiment sur la map
      :return: Liste des coordonnées complètes d'un bâtiment
-     :rtype:
 
-     :Example:
     """
     list_coordinates = []
     indexRow = 0
@@ -211,11 +208,10 @@ def building_score(cityplan, row, col, project_list, project_number, replica_lis
      :param: col : colonne top_left du bâtiment sur la map
      :param: project_list : Liste des projets (bâtiments) associés à la carte
      :param: project_number : Numéro de projet du bâtiment
-     :param: replica_list : Liste des repliques placées
+     :param: replica_list : Liste des répliques placées
      :return: Score du bâtiment
      :rtype: Entier
 
-     :Example:
     """
     plan = project_list[int(project_number)].matrix
     adapted_coordinates = _coordinates_adaptation(plan, row, col)
@@ -239,15 +235,14 @@ def _affichage_score(tested_replica, len_list, score, begin_time, is_residential
     """
      Affichage des informations lors du calcul du score
 
-     :param: tested_replica : Nombre de réplique déjà testée
-     :param: len_list : Nombre de réplique déjà testée
+     :param: tested_replica : Nombre de répliques déjà testées
+     :param: len_list : Nombre de répliques déjà testées
      :param: score : Score actuel
      :param: begin_time : Heure du début du calcul du score
      :param: is_residential : Nature du bâtiment (résidentiel ou utilitaire)
      :return: Informations
      :rtype: String
 
-     :Example:
     """
     print(" ------- " + "{0:.2f}".format(tested_replica / len_list * 100) + '%')
     if is_residential:
