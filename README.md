@@ -56,18 +56,17 @@ Une fois le score de toutes les configurations trouvé, on les trie et on ne gar
  ('n' étant calculé grâce à la génération actuelle, le nombre de génération maximale et le nombre de configurations dans la matrice).
 
 ### Performances
-<br/>
 
- |         Maps          |     Score      |   Temps d'exécution |
- | :-------------------: | : -----------: | :-----------------: |
- | a_example             |     125        |      1 min          |
- | b_short_walk          |     1 304 539  |      24 H           |
- | c_going_green         |     4 784 885  |      24 H           |
- | d_wide_selection      |     3 055 729  |      24 H           |
- | e_precise_fit         |     3 830 455  |      24 H           |
- | f_different_footprints|     1 227 733  |      24 H           |
+|         Maps           |     Score      |   Temps d'exécution |
+| :--------------------: | :------------: | :-----------------: |
+| a example              |     125        |      1 min          |
+| b short walk           |     1 304 539  |      24 H           |
+| c_going_green          |     4 784 885  |      24 H           |
+| d_wide_selection       |     3 055 729  |      24 H           |
+| e_precise_fit          |     3 830 455  |      24 H           |
+| f_different_footprints |     1 227 733  |      24 H           |
 
-<br/>
+
 
 ### Description de l'organisation du code
 Le code est organisé en différents package.<br/>
