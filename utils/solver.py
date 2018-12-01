@@ -21,7 +21,7 @@ def _random_solver(cityplan: CityPlan, project_list: list, error_max: int):
      :param: cityplan : Objet CityPlan modélisant la carte de travail
      :param: project_list : Liste des projets (bâtiments) associés à la carte
      :param: error_max : Nombre d'erreur maximal pour le placement des bâtiments
-     :return: Map remplie de bâtiments et la liste des repliques placées
+     :return: Map remplie de bâtiments et la liste des répliques placées
      :rtype: CityPlan et Liste
 
     """
@@ -89,7 +89,7 @@ def _advanced_random_solver(cityplan: CityPlan, project_list: list, error_max: i
      :param: cityplan : Objet CityPlan modélisant la carte de travail
      :param: project_list : Liste des projets (bâtiments) associés à la carte
      :param: error_max : Nombre d'erreur maximal pour le placement des bâtiments
-     :return: Map remplie de bâtiments et la liste des repliques placées
+     :return: Map remplie de bâtiments et la liste des répliques placées
      :rtype: CityPlan et Liste
 
     """
@@ -275,8 +275,8 @@ def _print_solver(len_replica_list):
     """
      Afficher le nombre de répliques
 
-     :param: len_replica_list : longueur de la liste de repliques
-     :return: Affiche des informations sur le nombre de repliques
+     :param: len_replica_list : longueur de la liste de répliques
+     :return: Affiche des informations sur le nombre de répliques
      :rtype: String
 
 
@@ -309,7 +309,7 @@ def _copy_best_buildings_in_matrix(cityplan, project_list, best_building_with_po
      :param: project_list : Liste des projets (bâtiments) associés à la carte
      :param: best_build_with_points : Liste des bâtiments ayant les plus grands score
      :param: taille_matrix : taille de la matrice
-     :return: cityplan avec les batiments replacés et la liste de répliques
+     :return: cityplan avec les bâtiments replacés et la liste de répliques
      :rtype: CityPlan, Liste
 
     """
