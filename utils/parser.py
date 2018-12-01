@@ -35,7 +35,7 @@ def parse(filename) -> (CityPlan, list):
         for i in range(len(grid)):  # [4, 7, 2, 3]
             grid[i] = int(grid[i])
 
-        city_plan = CityPlan(np.full((grid[0], grid[1]), '.', dtype=np.dtype('U5')), filename, grid[2])
+        city_plan = CityPlan(np.full((grid[0], grid[1]), '.', dtype=np.dtype('U9')), filename, grid[2])
 
         #### Project
         id_project = 0
@@ -54,11 +54,11 @@ def parse(filename) -> (CityPlan, list):
             for i in range(int(description[1])):
                 plan_string.append(input_file.readline())  # ['.#\n', '##\n', '.#\n']
                 plan.append(list(plan_string[i].splitlines()[0]))  # [['.', '#'], ['#', '#'], ['.', '#']]
-                plan_np = np.asarray(plan, dtype=np.dtype('U5')) # https://docs.scipy.org/doc/numpy-1.15.1/reference/arrays.dtypes.html#string-dtype-note
+                plan_np = np.asarray(plan, dtype=np.dtype('U9')) # https://docs.scipy.org/doc/numpy-1.15.1/reference/arrays.dtypes.html#string-dtype-note
                 for idx_row, val_row in enumerate(plan_np):
                     for idx_column, val_element in enumerate(val_row):
                         if val_element == '#':
-                            plan_np[idx_row][idx_column] = str(id_project)
+                            plan_np[idx_row][idx_column] = '#'#str(id_project)
             if description[0] == 'R':
                 project = Residential(id_project, plan_np, int(description[3]))
             elif description[0] == 'U':
@@ -98,12 +98,12 @@ def textify(replica_list, filename):
                               str(replica_list[replica_idx][1][1]) + '\n')
 
 
-def imgify(filename, cityplan, project_list):
+def imgify(filename, cityplan, project_list, replica_list):
     """
         Créer une image représentant le plan final, situé dans le dossier "[...]/polyhash2018/data/output/", grâce aux données en entrées
 
         :param cityplan: Objet CityPlan
-        :param project_list: Liste des projets
+        :param replica_list: Liste des replica
         :param filename: Nom de sortie du fichier (sans extension)
 
         :Example:
@@ -129,9 +129,9 @@ def imgify(filename, cityplan, project_list):
                 data[idx_row][idx_column] = black
             else:
                 val_element = int(val_element)
-                if type(project_list[val_element]) == Utility:
+                if type(project_list[replica_list[val_element][0]]) == Utility:
                     data[idx_row][idx_column] = green
-                elif type(project_list[val_element]) == Residential:
+                elif type(project_list[replica_list[val_element][0]]) == Residential:
                     data[idx_row][idx_column] = red
 
     img = smp.toimage(data)

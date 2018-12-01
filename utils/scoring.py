@@ -10,17 +10,22 @@
 # Ce scoring va permettre d'analyser le fichier d'une entrée formatée afin d'en déduire
 # le score de notre implémentation du Google HashCode 2018
 
-
-# [3, 1] ---> ligne 3 colonne 1
-# from itertools import islice
-from model import CityPlan
-from model import Residential
 from model import Utility
 import os.path
 import time
 
 
 def scoring_from_replica_list(replica_list, cityplan, project_list):
+    """
+     Calcul le score d'une map à partir de la liste de repliques placées sur cette carte
+
+     :param: replica_list : Liste des repliques placées
+     :param: cityplan : Objet CityPlan modélisant la carte de travail
+     :param: project_list : Liste des projets (bâtiments) associés à la carte
+     :return: Résultat du score de la carte
+     :rtype: Entier
+
+    """
     utility_list = []
     residential_list = []
     for replica in replica_list:
@@ -36,15 +41,39 @@ def scoring_from_replica_list(replica_list, cityplan, project_list):
             utility_list.append([project_number, row_top, col_top, adapted_coordinates])
         else:
             residential_list.append([project_number, row_top, col_top, adapted_coordinates])
-    return _scoring(utility_list, residential_list, cityplan, project_list)
+    return _scoring(utility_list, residential_list, cityplan, project_list, replica_list)
 
 
 def scoring_from_output(filename, cityplan, project_list):
+    """
+     Calcul le score d'une map à partir de son fichier d'un ficier de sortie
+
+     :param: filename : Nom du fichier (sans extensions)
+     :param: cityplan : Objet CityPlan modélisant la carte de travail
+     :param: project_list : Liste des projets (bâtiments) associés à la carte
+     :return: Résultat du score de la carte
+     :rtype: Entier
+
+     :Example:
+            scoring_from_output("a_example", cityplan, project_list)
+    """
     utilitaires_list, residential_list = _output_parser(filename, project_list)
     return _scoring(utilitaires_list, residential_list, cityplan, project_list)
 
 
-def _scoring(utilitaires_list, residential_list, cityplan, project_list):
+def _scoring(utilitaires_list, residential_list, cityplan, project_list, replica_list=None):
+    """
+     Fonction appelée pour le calcul du score via replica_list ou project_list
+
+     :param: utilitaires_list: Liste des utilitaires placés sur la map
+     :param: residential_list : Liste des résidences placées sur la map
+     :param: cityplan : Objet CityPlan modélisant la carte de travail
+     :param: project_list : Liste des projets (bâtiments) associés à la carte
+     :param: replica_list : Liste des repliques placées
+     :return: Le score de la map
+     :rtype: Entier
+
+    """
     begin_time = time.time()
     tested_residential = 0
     score = 0
@@ -54,44 +83,9 @@ def _scoring(utilitaires_list, residential_list, cityplan, project_list):
     print("Number of residential replica :", len_residential_list)
     print("Number of utilities replica :", len(utilitaires_list))
 
-    ## -------------------------------------------------------
-    ## -------------- Méthode non optimisées -----------------
-    ## -------------------------------------------------------
-    # for residence in residential_list:
-    #     if (tested_residential % 100) == 0 and tested_residential != 0:
-    #         print(" ------- " + "{0:.2f}".format(tested_residential/len_residential_list*100) + '%')
-    #         print("Residential tested :", tested_residential, "(of " + str(len_residential_list) + ")")
-    #         print("Partial scoring :", score)
-    #         print("Points per residential :", "{0:.2f}".format(score / tested_residential))
-    #         print("Approximated final score :", "{0:.2f}".format((score / tested_residential) * len_residential_list))
-    #
-    #     all_resid = residence[3]
-    #     number_project = residence[0]
-    #     types = []
-    #     for utilitaires in utilitaires_list:
-    #         all_utils = utilitaires[3]
-    #         util_project = utilitaires[0]
-    #         distance = _distance_manhattan(all_resid, all_utils)
-    #         if distance <= int(cityplan.dist_manhattan_max):
-    #             if not (project_list[int(util_project)].type in types):
-    #                 score += int(project_list[int(number_project)].capacity)
-    #                 types.append(project_list[int(util_project)].type)
-    #     tested_residential += 1
-
-    ## -------------------------------------------------------
-    ## ---------------- Méthode optimisées -------------------
-    ## -------------------------------------------------------
-
     for residence in residential_list:
         if (tested_residential % 500) == 0 and tested_residential != 0:
-            print(" ------- " + "{0:.2f}".format(tested_residential / len_residential_list * 100) + '%')
-            print("Residential tested :", tested_residential, "(of " + str(len_residential_list) + ")")
-            print("Partial scoring :", score)
-            print("Points per residential :", "{0:.2f}".format(score / tested_residential))
-            print("Approximated final score :", "{0:.2f}".format((score / tested_residential) * len_residential_list))
-            print("Approximated waiting time: %i s" % (((time.time() - begin_time) *
-                                                          1 // (tested_residential / len_residential_list)) - (
-                                                                     time.time() - begin_time)))
+            _affichage_score(tested_residential, len_residential_list, score, begin_time)
 
         all_resid = residence[3]
         number_project = residence[0]
@@ -101,7 +95,7 @@ def _scoring(utilitaires_list, residential_list, cityplan, project_list):
 
         for coordinates in manhattan_residence_area:
             if str(cityplan.matrix[coordinates]) != ".":
-                building = project_list[int(cityplan.matrix[coordinates])]
+                building = project_list[replica_list[int(cityplan.matrix[coordinates])][0]]
                 if type(building) is Utility.Utility:
                     if not (building.type in types):
                         types.append(building.type)
@@ -117,6 +111,15 @@ def _scoring(utilitaires_list, residential_list, cityplan, project_list):
 
 
 def _distance_manhattan(tab_resid, tab_utils):
+    """
+     Calcul la fistance de manhattan entre un bâtiment résidentiel et un bâtiment utilitaire
+
+     :param: tab_resid : Tableau des coordonnées du bâtiment résidentiel
+     :param: tab_utils : Tableau des coordonnées du bâtiment utilitaire
+     :return: La distance minimale entre une résidence et un utilitaire
+     :rtype: Entier
+
+    """
     min = 999
     for coor_resid in tab_resid:
         for coord_util in tab_utils:
@@ -128,6 +131,17 @@ def _distance_manhattan(tab_resid, tab_utils):
 
 
 def _output_parser(filename, project_list):
+    """
+     Extrait les bâtiments placés dans le fichier de sortie pour les ajouter à leur liste respective
+
+     :param: filename: Nom du fichier (sans extension)
+     :param: project_list : Liste des projets (bâtiments) associés à la carte
+     :return: La liste des bâtiments résidentiels et utilitaires
+     :rtype: utils : Liste de coordonnées
+     :rtype: resid : Liste de coordonnées
+
+     :Example:
+    """
     path = os.path.join(os.path.curdir, 'data', 'output', filename + '.out')
     with open(path, 'r') as input_file:
         buildings_number = input_file.readline()  # get the number of buildings placed in the city
@@ -142,7 +156,6 @@ def _output_parser(filename, project_list):
             row_top = line.split()[1]
             col_top = line.split()[2]
 
-            ##TODO: Récupération du plan du building
             plan = project_list[int(project_number)].matrix
             adapted_coordinates = _coordinates_adaptation(plan, row_top, col_top)
 
@@ -154,6 +167,17 @@ def _output_parser(filename, project_list):
 
 
 def _coordinates_adaptation(buildingPlan, rowTop, colTop):
+    """
+     Permet de détermier les coordonnées d'un bâtiment tels quels sont lorsque celui-ci est sur la map
+
+     :param: buildingPlan : Plan du bâtiment
+     :param: rowTop : ligne top_left du bâtiment sur la map
+     :param: colTop : colonne top_left du bâtiment sur la map
+     :return: Liste des coordonnées complètes d'un bâtiment
+     :rtype:
+
+     :Example:
+    """
     list_coordinates = []
     indexRow = 0
     for line in buildingPlan:
@@ -177,195 +201,63 @@ def _coordinates_adaptation(buildingPlan, rowTop, colTop):
 
 """
 
-# def coordinates_optimisation(list_residence, list_utilitaire):
-# for resid in residential_list:                                                  # Pour chaque résidence
-#     colTop_resid = resid[2]
-#     rowTop_resid = resid[1]
-#
-#     for util in utilitaires_list:                                                   # Pour chaque utilitaire
-#         colTop_util = util[2]
-#         rowTop_util = util[1]
-#         print(rowTop_resid)
-#         print(rowTop_util)
-#         # print(xTop_util)
-#         # print(yTop_util)
-#
-#         resid_tmp =[]
-#         util_tmp = []
-#         if colTop_resid < colTop_util:                  #Le batiment résidentiel est à gauche batiment utilitaire
-#
-#
-#             ligne_resid = rowTop_resid
-#             ligne_util = rowTop_util
-#             for cases in resid[3]:                                      #Sélection de la tranche gauche du batiment résidentiel
-#                 ligne = cases[0]
-#                 print("ligne : " + str(ligne))
-#                 col = cases[1]
-#                 if int(ligne_resid) == int(ligne):
-#                     max = [ligne, col]
-#                 else:
-#                     print("ligne resid : " + str(ligne_resid))
-#                     resid_tmp.append(max)
-#                     ligne_resid = ligne
-#                     print("ligne resid after : " + str(ligne_resid))
-#             resid_tmp.append(max)
-#
-#             first_tour = True
-#             for cases in util[3]:                                          #Sélection de la tranche droite du batiment utilitaire
-#                 ligne = cases[0]
-#                 print("ligne :" + str(ligne))
-#                 # print("ligne : " + str(ligne))
-#                 col = cases[1]
-#                 if first_tour:
-#                     min = [ligne, col]
-#                     util_tmp.append(min)
-#                     first_tour = False
-#
-#                 if int(ligne_util) != int(ligne):
-#                     # print("ligne resid : " + str(ligne_resid))
-#
-#                     ligne_util = ligne
-#                     min = [ligne, col]
-#                     print("add : " + str(min))
-#                     util_tmp.append(min)
-#                     # print("ligne resid after : " + str(ligne_resid))
-#
-#             print(resid_tmp)
-#             print(util_tmp)
-#
-#         elif colTop_resid > colTop_util:                                    # Le batiment utilitaire est sous le batiment résidentiel
-#
-#             ligne_resid = rowTop_resid
-#             ligne_util = rowTop_util
-#
-#             first_tour = True
-#             for cases in resid[3]:
-#                 ligne = cases[0]
-#                 print("ligne :" + str(ligne))
-#                 # print("ligne : " + str(ligne))
-#                 col = cases[1]
-#                 if first_tour:
-#                     min = [ligne, col]
-#                     resid_tmp.append(min)
-#                     first_tour = False
-#
-#                 if int(ligne_resid) != int(ligne):
-#                     # print("ligne resid : " + str(ligne_resid))
-#
-#                     ligne_resid = ligne
-#                     min = [ligne, col]
-#                     print("add : " + str(min))
-#                     resid_tmp.append(min)
-#                     # print("ligne resid after : " + str(ligne_resid))
-#
-#             for cases in util[3]:
-#                 ligne = cases[0]
-#                 # print("ligne : " + str(ligne))
-#                 col = cases[1]
-#                 if int(ligne_util) == int(ligne):
-#                     max = [ligne, col]
-#                 else:
-#                     # print("ligne resid : " + str(ligne_resid))
-#                     util_tmp.append(max)
-#                     ligne_util = ligne
-#                     # print("ligne resid after : " + str(ligne_resid))
-#             util_tmp.append(max)
-#
-#             print(resid_tmp)
-#             print(util_tmp)
-#
-#         else: # Mêmes coordonnées X, donc on regarde le y
-#                 if rowTop_resid < rowTop_util:                  #Le batiment résidentiel est à gauche batiment utilitaire
-#
-#                     ligne_resid = rowTop_resid
-#                     ligne_util = rowTop_util
-#                     for cases in resid[3]:                                      #Sélection de la tranche gauche du batiment résidentiel
-#                         ligne = cases[0]
-#                         print("ligne : " + str(ligne))
-#                         col = cases[1]
-#                         if int(ligne_resid) == int(ligne):
-#                             max = [ligne, col]
-#                         else:
-#                             print("ligne resid : " + str(ligne_resid))
-#                             resid_tmp.append(max)
-#                             ligne_resid = ligne
-#                             print("ligne resid after : " + str(ligne_resid))
-#                     resid_tmp.append(max)
-#
-#                     first_tour = True
-#                     for cases in util[3]:                                          #Sélection de la tranche droite du batiment utilitaire
-#                         ligne = cases[0]
-#                         print("ligne :" + str(ligne))
-#                         # print("ligne : " + str(ligne))
-#                         col = cases[1]
-#                         if first_tour:
-#                             min = [ligne, col]
-#                             util_tmp.append(min)
-#                             first_tour = False
-#
-#                         if int(ligne_util) != int(ligne):
-#                             # print("ligne resid : " + str(ligne_resid))
-#
-#                             ligne_util = ligne
-#                             min = [ligne, col]
-#                             print("add : " + str(min))
-#                             util_tmp.append(min)
-#                             # print("ligne resid after : " + str(ligne_resid))
-#
-#                     print(resid_tmp)
-#                     print(util_tmp)
-#
-#                 elif rowTop_resid > rowTop_util:                                    # Le batiment utilitaire est sous le batiment résidentiel
-#
-#                     ligne_resid = rowTop_resid
-#                     ligne_util = rowTop_util
-#
-#                     first_tour = True
-#                     for cases in resid[3]:
-#                         ligne = cases[0]
-#                         print("ligne :" + str(ligne))
-#                         # print("ligne : " + str(ligne))
-#                         col = cases[1]
-#                         if first_tour:
-#                             min = [ligne, col]
-#                             resid_tmp.append(min)
-#                             first_tour = False
-#
-#                         if int(ligne_resid) != int(ligne):
-#                             # print("ligne resid : " + str(ligne_resid))
-#
-#                             ligne_resid = ligne
-#                             min = [ligne, col]
-#                             print("add : " + str(min))
-#                             resid_tmp.append(min)
-#                             # print("ligne resid after : " + str(ligne_resid))
-#
-#                     for cases in util[3]:
-#                         ligne = cases[0]
-#                         # print("ligne : " + str(ligne))
-#                         col = cases[1]
-#                         if int(ligne_util) == int(ligne):
-#                             max = [ligne, col]
-#                         else:
-#                             # print("ligne resid : " + str(ligne_resid))
-#                             util_tmp.append(max)
-#                             ligne_util = ligne
-#                             # print("ligne resid after : " + str(ligne_resid))
-#                     util_tmp.append(max)
-#
-#                     print(resid_tmp)
-#                     print(util_tmp)
+
+def building_score(cityplan, row, col, project_list, project_number, replica_list):
+    """
+     Calcul du score d'un bâtiment particulier
+
+     :param: cityplan : Objet CityPlan modélisant la carte de travail
+     :param: row : ligne top_left du bâtiment sur la map
+     :param: col : colonne top_left du bâtiment sur la map
+     :param: project_list : Liste des projets (bâtiments) associés à la carte
+     :param: project_number : Numéro de projet du bâtiment
+     :param: replica_list : Liste des repliques placées
+     :return: Score du bâtiment
+     :rtype: Entier
+
+     :Example:
+    """
+    plan = project_list[int(project_number)].matrix
+    adapted_coordinates = _coordinates_adaptation(plan, row, col)
+    score = 0
+    types = []
+    manhattan_residence_area = project_list[int(project_number)].get_manhattan_surface(
+        int(cityplan.dist_manhattan_max), cityplan.matrix, adapted_coordinates)
+
+    for coordinates in manhattan_residence_area:
+        if str(cityplan.matrix[coordinates]) != ".":
+            building = project_list[int(replica_list[int(cityplan.matrix[coordinates])][0])]
+            if type(building) is Utility.Utility:
+                if not (building.type in types):
+                    types.append(building.type)
+                    score += int(project_list[int(project_number)].capacity)
+
+    return score
 
 
-# # Le batiment utilitaire est à droite du batiment résidentiel
+def _affichage_score(tested_replica, len_list, score, begin_time, is_residential=True):
+    """
+     Affichage des informations lors du calcul du score
 
+     :param: tested_replica : Nombre de réplique déjà testée
+     :param: len_list : Nombre de réplique déjà testée
+     :param: score : Score actuel
+     :param: begin_time : Heure du début du calcul du score
+     :param: is_residential : Nature du bâtiment (résidentiel ou utilitaire)
+     :return: Informations
+     :rtype: String
 
-# chemin = "/home/killian/Documents/Polytech/ProjetAlgo/polyhash2018/data/output/test.out"
-#
-# scoring(chemin)
+     :Example:
+    """
+    print(" ------- " + "{0:.2f}".format(tested_replica / len_list * 100) + '%')
+    if is_residential:
+        print("Residential tested :", tested_replica, "(of " + str(len_list) + ")")
+        print("Points per residential :", "{0:.2f}".format(score / tested_replica))
+        print("Approximated final score :", "{0:.2f}".format((score / tested_replica) * len_list))
+        print("Approximated waiting time: %i s" % (((time.time() - begin_time) *
+                                                    1 // (tested_replica / len_list)) - (
+                                                           time.time() - begin_time)))
+        print("Partial scoring :", score)
 
-##TODO: Regarder le type des utilitaires pour el calcul du score
-
-##TODO: Optimisation périmètre de recherche
-
-##TODO: Optimisaion des cases sur lesquelles calculer la distance
+    else:
+        print("Replica tested :", tested_replica, "(of " + str(len_list) + ")")

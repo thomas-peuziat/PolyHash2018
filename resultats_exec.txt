@@ -1,4 +1,0 @@
-random_solver:
-
-* e_precise_fit:
-    866 820;
